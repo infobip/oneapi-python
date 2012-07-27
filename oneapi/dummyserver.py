@@ -5,6 +5,12 @@ import SocketServer as mod_socketserver
 import time as mod_time
 import threading as mod_threading
 
+"""
+This web server is just for testing purposes. It may be used to wait for push 
+events from the server, but you must have an IP address reachable from the 
+internet.
+"""
+
 DEFAULT_PORT = 8000
 
 class PushListenerHandler(mod_basehttprequesthandler.BaseHTTPRequestHandler):
