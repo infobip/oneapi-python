@@ -150,3 +150,27 @@ class SmsClient(AbstractOneApiClient):
 
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
 
+class DataConnectionProfileClient(AbstractOneApiClient):
+
+    def __init__(self, username, password, base_url=None):
+        AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
+
+    def retrieve_roaming_status_async(self, destination_address, notify_url):
+        """
+        Retrieve asynchronously the customer’s roaming status for a single network-connected mobile device  (HLR)
+        """
+        params = {
+            'address': destination_address,
+            'notifyURL': notify_url,
+        }
+
+        # TODO(TK) Add these includeExtendedData, clientCorrelator, callbackData
+
+        is_success, result = self.execute_GET('/1/terminalstatus/queries/roamingStatus', params, 
+                                              leave_undecoded=True)
+
+        if notify_url:
+            return mod_object.Conversions.from_json(mod_models.GenericObject, {}, not is_success);
+        else:
+            return is_success
+

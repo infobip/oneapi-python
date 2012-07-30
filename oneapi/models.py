@@ -4,7 +4,7 @@ import object as mod_object
 import utils as mod_utils
 
 # ----------------------------------------------------------------------------------------------------
-# SMS message models:
+# Generic objects:
 # ----------------------------------------------------------------------------------------------------
 
 class OneApiError(mod_object.AbstractModel):
@@ -12,6 +12,12 @@ class OneApiError(mod_object.AbstractModel):
     message_id = [ mod_object.FieldConverter('requestError.serviceException.messageId'), mod_object.FieldConverter('requestError.policyException.messageId') ]
     text = [ mod_object.FieldConverter('requestError.serviceException.text'), mod_object.FieldConverter('requestError.policyException.text') ]
     variables = [ mod_object.FieldConverter('requestError.serviceException.variables'), mod_object.FieldConverter('requestError.policyException.variables') ]
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class GenericObject(mod_object.AbstractModel):
+    """ May be used where only is_success() is important. """
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
