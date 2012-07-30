@@ -13,7 +13,7 @@ import utils as mod_utils
 
 DEFAULT_BASE_URL = 'http://api.parseco.com'
 
-class SmsClient:
+class AbstractOneApiClient:
     """
     Note that this is *not* a http session. This class is just a utility class 
     holding authorization data and a few utility methods for http requests.
@@ -26,50 +26,6 @@ class SmsClient:
 
         if not self.base_url.endswith('/'):
             self.base_url += '/'
-
-    def send_sms(self, sms):
-        client_correlator = sms.client_correlator
-        if not client_correlator:
-            client_correlator = mod_utils.get_random_alphanumeric_string()
-
-        params = {
-            'senderAddress': sms.sender_address,
-            'address': sms.address,
-            'message': sms.message,
-            'clientCorrelator': client_correlator,
-            'senderName': 'tel:{0}'.format(sms.sender_address),
-        }
-
-        if sms.notify_url:
-            params['notifyURL'] = sms.notify_url
-        if sms.callback_data:
-            params['callbackData'] = sms.callback_data
-
-        is_success, result = self.execute_POST(
-                '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
-                params = params
-        )
-
-        return mod_object.Conversions.from_json(mod_models.ResourceReference, result, not is_success)
-
-    def query_delivery_status(self, client_correlator_or_resource_reference):
-        if hasattr(client_correlator_or_resource_reference, 'client_correlator'):
-            client_correlator = client_correlator_or_resource_reference.client_correlator
-        else:
-            client_correlator = client_correlator_or_resource_reference
-
-        client_correlator = self.get_client_correlator(client_correlator)
-
-        params = {
-            'clientCorrelator': client_correlator,
-        }
-
-        is_success, result = self.execute_GET(
-                '/1/smsmessaging/outbound/TODO/requests/{0}/deliveryInfos'.format(client_correlator),
-                params = params
-        )
-
-        return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
 
     def get_client_correlator(self, client_correlator=None):
         if client_correlator:
@@ -144,3 +100,53 @@ class SmsClient:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
+
+class SmsClient(AbstractOneApiClient):
+
+    def __init__(self, username, password, base_url=None):
+        AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
+
+    def send_sms(self, sms):
+        client_correlator = sms.client_correlator
+        if not client_correlator:
+            client_correlator = mod_utils.get_random_alphanumeric_string()
+
+        params = {
+            'senderAddress': sms.sender_address,
+            'address': sms.address,
+            'message': sms.message,
+            'clientCorrelator': client_correlator,
+            'senderName': 'tel:{0}'.format(sms.sender_address),
+        }
+
+        if sms.notify_url:
+            params['notifyURL'] = sms.notify_url
+        if sms.callback_data:
+            params['callbackData'] = sms.callback_data
+
+        is_success, result = self.execute_POST(
+                '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
+                params = params
+        )
+
+        return mod_object.Conversions.from_json(mod_models.ResourceReference, result, not is_success)
+
+    def query_delivery_status(self, client_correlator_or_resource_reference):
+        if hasattr(client_correlator_or_resource_reference, 'client_correlator'):
+            client_correlator = client_correlator_or_resource_reference.client_correlator
+        else:
+            client_correlator = client_correlator_or_resource_reference
+
+        client_correlator = self.get_client_correlator(client_correlator)
+
+        params = {
+            'clientCorrelator': client_correlator,
+        }
+
+        is_success, result = self.execute_GET(
+                '/1/smsmessaging/outbound/TODO/requests/{0}/deliveryInfos'.format(client_correlator),
+                params = params
+        )
+
+        return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
+
