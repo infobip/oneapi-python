@@ -89,4 +89,53 @@ class DeliveryInfoList(mod_object.AbstractModel):
         mod_object.AbstractModel.__init__(self)
 
 # ----------------------------------------------------------------------------------------------------
+# HLR models:
+# ----------------------------------------------------------------------------------------------------
 
+
+class ServingMccMnc(mod_object.AbstractModel):
+
+    mcc = mod_object.FieldConverter('mcc')
+    mnc = mod_object.FieldConverter('mnc')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class TerminalRoamingExtendedData(mod_object.AbstractModel):
+
+    destination_address = mod_object.FieldConverter('destinationAddress')
+    status_id = mod_object.FieldConverter('statusId')
+    done_time = mod_object.FieldConverter('doneTime')
+    price_per_message = mod_object.FieldConverter('pricePerMessage')
+    mcc_mnc = mod_object.FieldConverter('mccMnc')
+    serving_msc = mod_object.FieldConverter('servingMsc')
+    censored_serving_msc = mod_object.FieldConverter('censoredServingMsc')
+    gsm_error_code = mod_object.FieldConverter('gsmErrorCode')
+    original_network_name = mod_object.FieldConverter('originalNetworkName')
+    ported_network_name = mod_object.FieldConverter('portedNetworkName')
+    serving_hlr = mod_object.FieldConverter('servingHlr')
+    imsi = mod_object.FieldConverter('imsi')
+    original_network_prefix = mod_object.FieldConverter('originalNetworkPrefix')
+    original_country_prefix = mod_object.FieldConverter('originalCountryPrefix')
+    original_country_name = mod_object.FieldConverter('originalCountryName')
+    is_number_ported = mod_object.FieldConverter('isNumberPorted')
+    ported_network_prefix = mod_object.FieldConverter('portedNetworkPrefix')
+    ported_country_prefix = mod_object.FieldConverter('portedCountryPrefix')
+    ported_country_name = mod_object.FieldConverter('portedCountryName')
+    number_in_roaming = mod_object.FieldConverter('numberInRoaming')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class TerminalRoamingStatus(mod_object.AbstractModel):
+
+    servingMccMnc = mod_object.ObjectFieldConverter(ServingMccMnc, 'servingMccMnc')
+    address = mod_object.FieldConverter()
+    currentRoaming = mod_object.FieldConverter('currentRoaming')
+    resourceURL = mod_object.FieldConverter('resourceURL')
+    retrievalStatus = mod_object.FieldConverter('retrievalStatus')
+    callbackData = mod_object.FieldConverter('callbackData')
+    extendedData = mod_object.ObjectFieldConverter(TerminalRoamingExtendedData, 'extendedData')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)

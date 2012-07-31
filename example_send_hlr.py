@@ -20,7 +20,6 @@ username = mod_sys.argv[1]
 password = mod_sys.argv[2]
 
 destination_address = raw_input('Enter the destination address?')
-#destination_address = raw_input('Enter the destination address?')
 
 data_connection_client = mod_oneapi.DataConnectionProfileClient(username, password)
 

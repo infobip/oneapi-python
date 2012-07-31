@@ -101,6 +101,10 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
+    def create_from_json(self, classs, json, is_error):
+        """ Converti API result from json to model. """
+        return mod_object.Conversions.from_json(classs, json, is_error);
+
 class SmsClient(AbstractOneApiClient):
 
     def __init__(self, username, password, base_url=None):
@@ -155,14 +159,16 @@ class DataConnectionProfileClient(AbstractOneApiClient):
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
-    def retrieve_roaming_status_async(self, destination_address, notify_url):
+    def retrieve_roaming_status(self, destination_address, notify_url=None):
         """
         Retrieve asynchronously the customer’s roaming status for a single network-connected mobile device  (HLR)
         """
         params = {
             'address': destination_address,
-            'notifyURL': notify_url,
         }
+
+        if notify_url:
+            params['notifyURL'] = notify_url
 
         # TODO(TK) Add these includeExtendedData, clientCorrelator, callbackData
 
@@ -170,7 +176,9 @@ class DataConnectionProfileClient(AbstractOneApiClient):
                                               leave_undecoded=True)
 
         if notify_url:
-            return mod_object.Conversions.from_json(mod_models.GenericObject, {}, not is_success);
+            return self.create_from_json(mod_models.GenericObject, {}, not is_success);
         else:
-            return is_success
-
+            assert result
+            json = mod_json.loads(result)
+            assert json.has_key('roaming')
+            return self.create_from_json(mod_models.TerminalRoamingStatus, json['roaming'], not is_success);

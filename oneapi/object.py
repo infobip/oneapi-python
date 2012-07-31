@@ -27,8 +27,8 @@ class LastPartOfUrlFieldConverter(FieldConverter):
         FieldConverter.__init__(self, json_field_name=json_field_name)
 
     def from_json(self, value):
-        if not value:
-            return value
+        if value == None:
+            return None
 
         parts = value.split('/')
 
@@ -44,6 +44,9 @@ class ObjectFieldConverter(FieldConverter):
         self.classs = classs
 
     def from_json(self, value):
+        if value == None:
+            return None
+
         return Conversions.from_json(self.classs, value, is_error=False)
 
     def to_json(self, value):
