@@ -157,7 +157,7 @@ class InboundSmsMessage(mod_object.AbstractModel):
 
 class InboundSmsMessages(mod_object.AbstractModel):
 
-    inbound_sms_message = mod_object.ObjectsListFieldConverter(mod_object.InboundSmsMessage, 'inboundSMSMessageList.inboundSMSMessage')
+    inbound_sms_message = mod_object.ObjectsListFieldConverter(InboundSmsMessage, 'inboundSMSMessageList.inboundSMSMessage')
     number_of_messages_in_this_batch = mod_object.FieldConverter('inboundSMSMessageList.numberOfMessagesInThisBatch')
     total_number_of_pending_messages = mod_object.FieldConverter('inboundSMSMessageList.totalNumberOfPendingMessages')
     callback_data = mod_object.FieldConverter('inboundSMSMessageList.callbackData')
