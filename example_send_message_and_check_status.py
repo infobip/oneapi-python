@@ -37,7 +37,8 @@ print result
 print 'Is success = ', result.is_success()
 print 'Client correlator = ', result.client_correlator
 
-server = mod_dummyserver.DummyWebServer(port)
-server.start_wait_and_shutdown()
+# Few seconds later we can check for the sending status
+mod_time.sleep(10)
 
-print server.get_requests()
+query_status = sms_client.query_delivery_status(result.client_correlator)
+print query_status.delivery_info[0].delivery_status
