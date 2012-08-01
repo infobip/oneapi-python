@@ -154,6 +154,25 @@ class SmsClient(AbstractOneApiClient):
 
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
 
+    def retrieve_inbound_messages(max_number):
+        if not max_number or max_number < 0:
+            max_number = 100
+
+        params = {
+                'maxBatchSize': max_number,
+        }
+
+        is_success, result = self.execute_GET(
+                '/1/smsmessaging/inbound/registrations/INBOUND/messages', 
+                params
+        )
+
+        return self.create_from_json(mod_object.InboundSmsMessages, result, not is_success)
+
+    @staticmethod
+    def unserialize_inbound_message(json):
+        return mod_object.Conversions.from_json(mod_object.InboundSmsMessages, json, False)
+
 class DataConnectionProfileClient(AbstractOneApiClient):
 
     def __init__(self, username, password, base_url=None):
