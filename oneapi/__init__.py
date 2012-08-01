@@ -42,6 +42,12 @@ class AbstractOneApiClient:
 
         return self.base_url + rest_path
 
+    def is_valid(self):
+        """ Check if the authorization (username/password) is valid. """
+        is_success, result = self.execute_GET('/1/customerProfile')
+
+        return is_success
+
     def get_exception_details(self, exception_response):
         """ Returns message_id, text and variables from the standard API exception response. """
         exception = None
