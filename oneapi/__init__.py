@@ -11,7 +11,7 @@ import models as mod_models
 import object as mod_object
 import utils as mod_utils
 
-DEFAULT_BASE_URL = 'http://api.parseco.com'
+DEFAULT_BASE_URL = 'https://api.parseco.com'
 
 class AbstractOneApiClient:
     """
@@ -67,7 +67,7 @@ class AbstractOneApiClient:
         return message_id, text, variables
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.get(self.get_rest_url(rest_path), params=params, auth=(self.username, self.password))
+        response = mod_requests.get(self.get_rest_url(rest_path), params=params, auth=(self.username, self.password), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('text:{0}'.format(response.text))
@@ -81,7 +81,7 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_POST(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.post(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password))
+        response = mod_requests.post(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -96,7 +96,7 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_DELETE(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.delete(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password))
+        response = mod_requests.delete(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('text:{0}'.format(response.text))
