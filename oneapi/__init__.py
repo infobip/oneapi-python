@@ -152,6 +152,7 @@ class SmsClient(AbstractOneApiClient):
                 params = params
         )
 
+        # TODO: Simplify the resulting object
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
 
 class DataConnectionProfileClient(AbstractOneApiClient):
