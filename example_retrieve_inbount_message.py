@@ -1,21 +1,21 @@
 import pdb
 
-import sys as mod_sys
-import logging as mod_logging
+import sys as sys
+import logging as logging
 
-import oneapi as mod_oneapi
-import oneapi.models as mod_models
-import oneapi.dummyserver as mod_dummyserver
+import oneapi as oneapi
+import oneapi.models as models
+import oneapi.dummyserver as dummyserver
 
-mod_logging.basicConfig(level=mod_logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
-if len(mod_sys.argv) < 2:
+if len(sys.argv) < 2:
     print 'Please enter username and password'
-    mod_sys.exit(1)
+    sys.exit(1)
 
-username = mod_sys.argv[1]
-password = mod_sys.argv[2]
+username = sys.argv[1]
+password = sys.argv[2]
 
-sms_client = mod_oneapi.SmsClient(username, password)
+sms_client = oneapi.SmsClient(username, password)
 
 result = sms_client.retrieve_inbound_messages()
