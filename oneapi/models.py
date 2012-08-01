@@ -139,3 +139,30 @@ class TerminalRoamingStatus(mod_object.AbstractModel):
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
+
+# ----------------------------------------------------------------------------------------------------
+# MO models:
+
+class InboundSmsMessage(mod_object.AbstractModel):
+
+    date_time = mod_object.FieldConverter('dateTime')
+    destination_address = mod_object.FieldConverter('destinationAddress')
+    message_id = mod_object.FieldConverter('messageId')
+    message = mod_object.FieldConverter('message')
+    resource_url = mod_object.FieldConverter('resourceURL')
+    sender_address = mod_object.FieldConverter('senderAddress')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class InboundSmsMessages(mod_object.AbstractModel):
+
+    inbound_sms_message = mod_object.ObjectsListFieldConverter(InboundSmsMessage, 'inboundSMSMessageList.inboundSMSMessage')
+    number_of_messages_in_this_batch = mod_object.FieldConverter('inboundSMSMessageList.numberOfMessagesInThisBatch')
+    total_number_of_pending_messages = mod_object.FieldConverter('inboundSMSMessageList.totalNumberOfPendingMessages')
+    callback_data = mod_object.FieldConverter('inboundSMSMessageList.callbackData')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+# ----------------------------------------------------------------------------------------------------
