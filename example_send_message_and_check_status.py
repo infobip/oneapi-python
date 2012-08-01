@@ -18,8 +18,6 @@ if len(mod_sys.argv) < 2:
 
 username = mod_sys.argv[1]
 password = mod_sys.argv[2]
-public_ip_address = mod_sys.argv[3]
-port = 9000
 
 sms_client = mod_oneapi.SmsClient(username, password)
 
@@ -27,7 +25,6 @@ sms = mod_models.SMSRequest()
 sms.sender_address = '38598854702'
 sms.address = '38598854702'
 sms.message = 'Test message'
-sms.notify_url = 'http://{0}:9000'.format(public_ip_address)
 sms.callback_data = 'Any string'
 
 result = sms_client.send_sms(sms)
