@@ -208,3 +208,18 @@ class DataConnectionProfileClient(AbstractOneApiClient):
             json = mod_json.loads(result)
             assert json.has_key('roaming')
             return self.create_from_json(mod_models.TerminalRoamingStatus, json['roaming'], not is_success);
+
+class CustomerProfileClient(AbstractOneApiClient):
+
+    def __init__(self, username, password, base_url=None):
+        AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
+
+    def get_account_balance(self):
+        is_success, result = self.execute_GET('/1/customerProfile/balance')
+        
+        return self.create_from_json(mod_models.AccountBalance, result, not is_success)
+
+    def get_customer_profile(self):
+        is_success, result = self.execute_GET('/1/customerProfile')
+
+        return self.create_from_json(mod_models.CustomerProfile, result, not is_success)

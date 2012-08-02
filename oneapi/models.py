@@ -142,6 +142,7 @@ class TerminalRoamingStatus(mod_object.AbstractModel):
 
 # ----------------------------------------------------------------------------------------------------
 # MO models:
+# ----------------------------------------------------------------------------------------------------
 
 class InboundSmsMessage(mod_object.AbstractModel):
 
@@ -166,3 +167,45 @@ class InboundSmsMessages(mod_object.AbstractModel):
         mod_object.AbstractModel.__init__(self)
 
 # ----------------------------------------------------------------------------------------------------
+# Customer profile:
+# ----------------------------------------------------------------------------------------------------
+
+class CustomerProfile(mod_object.AbstractModel):
+
+    id = mod_object.FieldConverter()
+    username = mod_object.FieldConverter()
+    forename = mod_object.FieldConverter()
+    surname = mod_object.FieldConverter()
+    street = mod_object.FieldConverter()
+    city = mod_object.FieldConverter()
+    zip_code = mod_object.FieldConverter('zipCode')
+    telephone = mod_object.FieldConverter()
+    gsm = mod_object.FieldConverter()
+    fax = mod_object.FieldConverter()
+    email = mod_object.FieldConverter()
+    msn = mod_object.FieldConverter()
+    skype = mod_object.FieldConverter()
+    country_id = mod_object.FieldConverter('countryId')
+    timezone_id = mod_object.FieldConverter('timezoneId')
+    primary_language_id = mod_object.FieldConverter('primaryLanguageId')
+    secondary_language_id = mod_object.FieldConverter('secondaryLanguageId')
+    
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class Currency(mod_object.AbstractModel):
+
+    id = mod_object.FieldConverter()
+    currency_name = mod_object.FieldConverter('currencyName')
+    symbol = mod_object.FieldConverter()
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class AccountBalance(mod_object.AbstractModel):
+
+    balance = mod_object.FieldConverter()
+    currency = mod_object.ObjectFieldConverter(Currency)
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
