@@ -70,7 +70,6 @@ class AbstractOneApiClient:
         response = mod_requests.get(self.get_rest_url(rest_path), params=params, auth=(self.username, self.password), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
-        mod_logging.debug('text:{0}'.format(response.text))
         mod_logging.debug('content:{0}'.format(response.content))
 
         is_success = 200 <= response.status_code <= 299
@@ -85,7 +84,6 @@ class AbstractOneApiClient:
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
-        mod_logging.debug('text:{0}'.format(response.text))
         mod_logging.debug('content:{0}'.format(response.content))
 
         is_success = 200 <= response.status_code <= 299
@@ -99,7 +97,6 @@ class AbstractOneApiClient:
         response = mod_requests.delete(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
-        mod_logging.debug('text:{0}'.format(response.text))
         mod_logging.debug('content:{0}'.format(response.content))
 
         if leave_undecoded:

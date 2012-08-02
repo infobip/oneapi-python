@@ -136,6 +136,8 @@ class Conversions:
                             json_value = mod_utils.get(json, json_field_name)
                             converted = attribute_value.from_json(json_value)
                 if object_field_name:
+                    if isinstance(converted, unicode):
+                        converted = converted.encode('utf-8')
                     setattr(obj, object_field_name, converted)
 
         return obj

@@ -22,5 +22,5 @@ customer_profile_client = oneapi.CustomerProfileClient(username, password)
 account_balance = customer_profile_client.get_account_balance()
 
 print
-print account_balance
+print account_balance.balance, account_balance.currency.symbol
 print
