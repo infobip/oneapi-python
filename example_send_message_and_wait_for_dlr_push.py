@@ -22,6 +22,7 @@ public_ip_address = sys.argv[3]
 port = 9000
 
 sms_client = oneapi.SmsClient(username, password)
+sms_client.login()
 
 sms = models.SMSRequest()
 sms.sender_address = '38598854702'

@@ -13,13 +13,14 @@ import oneapi.dummyserver as dummyserver
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
 if len(sys.argv) < 2:
-    print 'Please enter username, password and your public ip address'
+    print 'Please enter username and password'
     sys.exit(1)
 
 username = sys.argv[1]
 password = sys.argv[2]
 
 sms_client = oneapi.SmsClient(username, password)
+sms_client.login()
 
 sms = models.SMSRequest()
 sms.sender_address = '38598854702'

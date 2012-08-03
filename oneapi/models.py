@@ -22,6 +22,26 @@ class GenericObject(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
+
+class OneApiAuthentication(mod_object.AbstractModel):
+    """
+    Every client has a instance of this class that contains the basic 
+    authorization dana.
+    """
+
+    username = None
+    password = None
+    ibsso_token = mod_object.FieldConverter('login.ibAuthCookie')
+    authenticated = None
+    verified = mod_object.FieldConverter('login.verified')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+    
+        self.authenticated = False
+        self.verified = False
+        self.ibsso_token = None
+
 # ----------------------------------------------------------------------------------------------------
 # SMS message models:
 # ----------------------------------------------------------------------------------------------------

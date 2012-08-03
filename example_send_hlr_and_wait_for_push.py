@@ -23,6 +23,7 @@ destination_address = raw_input('Enter the destination address?')
 #destination_address = raw_input('Enter the destination address?')
 
 data_connection_client = oneapi.DataConnectionProfileClient(username, password)
+data_connection_client.login()
 
 response = data_connection_client.retrieve_roaming_status(destination_address)
 

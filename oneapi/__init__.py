@@ -23,9 +23,29 @@ class AbstractOneApiClient:
         self.base_url = base_url if base_url else DEFAULT_BASE_URL
         self.username = username
         self.password = password
+        self.oneapi_authentication = None
 
         if not self.base_url.endswith('/'):
             self.base_url += '/'
+
+    def login(self):
+
+        params = {
+                'username': self.username,
+                'password': self.password,
+        }
+
+        is_success, result = self.execute_POST('/1/customerProfile/login', params)
+
+        return self.fill_oneapi_authentication(result, is_success)
+
+    def fill_oneapi_authentication(self, content, is_success):
+        self.oneapi_authentication = mod_object.Conversions.from_json(mod_models.OneApiAuthentication, 
+                                                                      content, not is_success)
+        self.oneapi_authentication.username = self.username
+        self.oneapi_authentication.password = self.password
+        self.oneapi_authentication.authenticated = len(self.oneapi_authentication.ibsso_token) > 0
+        return self.oneapi_authentication
 
     def get_client_correlator(self, client_correlator=None):
         if client_correlator:
@@ -66,8 +86,15 @@ class AbstractOneApiClient:
 
         return message_id, text, variables
 
+    def get_headers(self):
+        result = {}
+        if self.oneapi_authentication and self.oneapi_authentication.ibsso_token:
+            result['Authorization'] = 'IBSSO {0}'.format(self.oneapi_authentication.ibsso_token)
+        return result
+
     def execute_GET(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.get(self.get_rest_url(rest_path), params=params, auth=(self.username, self.password), verify=False)
+        response = mod_requests.get(self.get_rest_url(rest_path), params=params, 
+                                    headers=self.get_headers(), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
@@ -80,7 +107,8 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_POST(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.post(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password), verify=False)
+        response = mod_requests.post(self.get_rest_url(rest_path), data=params, 
+                                     headers=self.get_headers(), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -94,7 +122,8 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_DELETE(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_requests.delete(self.get_rest_url(rest_path), data=params, auth=(self.username, self.password), verify=False)
+        response = mod_requests.delete(self.get_rest_url(rest_path), data=params, 
+                                       headers=self.get_headers(), verify=False)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
