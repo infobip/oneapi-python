@@ -123,18 +123,14 @@ class Conversions:
             assert not obj.is_success()
         else:
             for attribute_name in dir(obj.__class__):
-                attribute_values = getattr(obj.__class__, attribute_name)
-                if not isinstance(attribute_values, list):
-                    attribute_values = [attribute_values]
-                converted = None
+                attribute_value = getattr(obj.__class__, attribute_name)
                 object_field_name = None
-                for attribute_value in attribute_values:
-                    if not converted:
-                        if isinstance(attribute_value, FieldConverter):
-                            object_field_name = attribute_value.object_field_name
-                            json_field_name = attribute_value.json_field_name
-                            json_value = mod_utils.get(json, json_field_name)
-                            converted = attribute_value.from_json(json_value)
+                converted = None
+                if isinstance(attribute_value, FieldConverter):
+                    object_field_name = attribute_value.object_field_name
+                    json_field_name = attribute_value.json_field_name
+                    json_value = mod_utils.get(json, json_field_name)
+                    converted = attribute_value.from_json(json_value)
                 if object_field_name:
                     if isinstance(converted, unicode):
                         converted = converted.encode('utf-8')

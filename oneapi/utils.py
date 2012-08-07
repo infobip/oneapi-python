@@ -22,6 +22,14 @@ def get(json_data, path):
     result = json_data
     parts = path.split('.')
 
+    if '|' in path:
+        parts = path.split('|')
+        for part in parts:
+            result = get(json_data, part)
+            if result:
+                return result
+        return None
+
     for part in parts:
         try:
             part = int(part)

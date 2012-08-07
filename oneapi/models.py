@@ -9,9 +9,9 @@ import utils as mod_utils
 
 class OneApiError(mod_object.AbstractModel):
 
-    message_id = [ mod_object.FieldConverter('requestError.serviceException.messageId'), mod_object.FieldConverter('requestError.policyException.messageId') ]
-    text = [ mod_object.FieldConverter('requestError.serviceException.text'), mod_object.FieldConverter('requestError.policyException.text') ]
-    variables = [ mod_object.FieldConverter('requestError.serviceException.variables'), mod_object.FieldConverter('requestError.policyException.variables') ]
+    message_id = mod_object.FieldConverter('requestError.serviceException.messageId | requestError.policyException.messageId')
+    text = mod_object.FieldConverter('requestError.serviceException.text | requestError.policyException.text')
+    variables = mod_object.FieldConverter('requestError.serviceException.variables | requestError.policyException.variables')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
