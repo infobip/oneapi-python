@@ -68,24 +68,6 @@ class AbstractOneApiClient:
 
         return is_success
 
-    def get_exception_details(self, exception_response):
-        """ Returns message_id, text and variables from the standard API exception response. """
-        exception = None
-        try:
-            exception = result['requestError']['serviceException']
-        except Exception, e:
-            pass
-        if not exception:
-            try:
-                exception = result['requestError']['serviceException']
-            except Exception, e:
-                pass
-        message_id = exception['messageId'] if exception.has_key('messageId') else None
-        text = exception['text'] if exception.has_key('text') else None
-        variables = exception['variables'] if exception.has_key('variables') else None
-
-        return message_id, text, variables
-
     def get_headers(self):
         result = {}
         if self.oneapi_authentication and self.oneapi_authentication.ibsso_token:
