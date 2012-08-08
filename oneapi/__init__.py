@@ -28,6 +28,10 @@ class AbstractOneApiClient:
         if not self.base_url.endswith('/'):
             self.base_url += '/'
 
+        # If true -- an exception will be thrown on error, otherwise, you have 
+        # to check the is_success and exception methods on resulting objects.
+        self.raise_exception = True
+
     def login(self):
 
         params = {
@@ -40,7 +44,7 @@ class AbstractOneApiClient:
         return self.fill_oneapi_authentication(result, is_success)
 
     def fill_oneapi_authentication(self, content, is_success):
-        self.oneapi_authentication = mod_object.Conversions.from_json(mod_models.OneApiAuthentication, 
+        self.oneapi_authentication = self.create_from_json(mod_models.OneApiAuthentication, 
                                                                       content, not is_success)
         self.oneapi_authentication.username = self.username
         self.oneapi_authentication.password = self.password
@@ -117,7 +121,13 @@ class AbstractOneApiClient:
 
     def create_from_json(self, classs, json, is_error):
         """ Converti API result from json to model. """
-        return mod_object.Conversions.from_json(classs, json, is_error);
+        result = mod_object.Conversions.from_json(classs, json, is_error);
+
+        if self.raise_exception and not result.is_success():
+            message = "{0}: {1} [{2}]".format(result.exception.message_id, result.exception.text, result.exception.variables)
+            raise Exception(message)
+
+        return result
 
 class SmsClient(AbstractOneApiClient):
 
@@ -147,7 +157,7 @@ class SmsClient(AbstractOneApiClient):
                 params = params
         )
 
-        return mod_object.Conversions.from_json(mod_models.ResourceReference, result, not is_success)
+        return self.create_from_json(mod_models.ResourceReference, result, not is_success)
 
     def query_delivery_status(self, client_correlator_or_resource_reference):
         if hasattr(client_correlator_or_resource_reference, 'client_correlator'):
@@ -167,7 +177,7 @@ class SmsClient(AbstractOneApiClient):
         )
 
         # TODO: Simplify the resulting object
-        return mod_object.Conversions.from_json(mod_models.DeliveryInfoList, result, not is_success)
+        return self.create_from_json(mod_models.DeliveryInfoList, result, not is_success)
 
     def retrieve_inbound_messages(self, max_number=None):
         if not max_number or max_number < 0:
@@ -186,7 +196,7 @@ class SmsClient(AbstractOneApiClient):
 
     @staticmethod
     def unserialize_inbound_message(json):
-        return mod_object.Conversions.from_json(mod_models.InboundSmsMessages, json, False)
+        return self.create_from_json(mod_models.InboundSmsMessages, json, False)
 
 class DataConnectionProfileClient(AbstractOneApiClient):
 

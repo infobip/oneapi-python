@@ -25,7 +25,7 @@ def get(json_data, path):
     if '|' in path:
         parts = path.split('|')
         for part in parts:
-            result = get(json_data, part)
+            result = get(json_data, part.strip())
             if result:
                 return result
         return None
