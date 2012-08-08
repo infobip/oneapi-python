@@ -14,6 +14,9 @@ import utils as mod_utils
 DEFAULT_BASE_URL = 'https://api.parseco.com'
 
 class AbstractOneApiClient:
+
+    VERSION = '0.01'
+
     """
     Note that this is *not* a http session. This class is just a utility class 
     holding authorization data and a few utility methods for http requests.
@@ -74,6 +77,7 @@ class AbstractOneApiClient:
 
     def get_headers(self):
         result = {}
+        result["User-Agent"] = "OneApi-python-{0}".format(self.VERSION)
         if self.oneapi_authentication and self.oneapi_authentication.ibsso_token:
             result['Authorization'] = 'IBSSO {0}'.format(self.oneapi_authentication.ibsso_token)
         return result
