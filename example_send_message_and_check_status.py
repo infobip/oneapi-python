@@ -20,16 +20,27 @@ username = sys.argv[1]
 password = sys.argv[2]
 address = sys.argv[3]
 
+# example:initialize-sms-client
 sms_client = oneapi.SmsClient(username, password)
-sms_client.login()
+# ----------------------------------------------------------------------------------------------------
 
+# example:login-sms-client
+sms_client.login()
+# ----------------------------------------------------------------------------------------------------
+
+# example:prepare-message-without-notify-url
 sms = models.SMSRequest()
 sms.sender_address = address
 sms.address = address
-sms.message = 'Test message šđčćžŠĐČĆŽ'
+sms.message = 'Test message'
 sms.callback_data = 'Any string'
+# ----------------------------------------------------------------------------------------------------
 
+# example:send-message
 result = sms_client.send_sms(sms)
+# store client correlator because we can later query for the delivery status with it:
+client_correlator = result.client_correlator
+# ----------------------------------------------------------------------------------------------------
 
 if not result.is_success():
     print 'Error sending message:', result.exception
@@ -42,5 +53,7 @@ print 'Client correlator = ', result.client_correlator
 # Few seconds later we can check for the sending status
 time.sleep(10)
 
-query_status = sms_client.query_delivery_status(result.client_correlator)
-print query_status.delivery_info[0].delivery_status
+# example:query-for-delivery-status
+query_status = sms_client.query_delivery_status(client_correlator)
+delivery_status = query_status.delivery_info[0].delivery_status
+# ----------------------------------------------------------------------------------------------------
