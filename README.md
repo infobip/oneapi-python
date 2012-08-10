@@ -53,21 +53,50 @@ Same as with the standard messaging example, but when preparing your message:
     sms.notify_url = notify_url
 
 
-When the delivery notification is pushed to your server, you must process the body of the message with the following code:
+When the delivery notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
     TODO
 
 HLR example
 -----------------------
 
+Initialize and login the data connection client:
+
+    data_connection_client = oneapi.DataConnectionProfileClient(username, password)
+    data_connection_client.login()
+
+
+Retrieve the roaming status (HLR):
+
+    TODO
+
 HLR with notification push example
 -----------------------
+
+Similar to the previous example, but this time you must set the notification url where the result will be pushed:
+
+    response = data_connection_client.retrieve_roaming_status(destination_address, notify_url)
+
+
+When the roaming status notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
+
+    TODO
 
 Retrieve inbound messages example
 -----------------------
 
+With the existing sms client (see the basic messaging example to see how to start it):
+
+    result = sms_client.retrieve_inbound_messages()
+
+
 Inbound message push example
 -----------------------
+
+The subscription to recive inbound messages can be set up on our site.
+When the inbound message notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
+
+    TODO
 
 License
 -------

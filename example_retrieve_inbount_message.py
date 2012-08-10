@@ -19,4 +19,6 @@ password = sys.argv[2]
 sms_client = oneapi.SmsClient(username, password)
 sms_client.login()
 
+# example:retrieve-inbound-messages
 result = sms_client.retrieve_inbound_messages()
+# ----------------------------------------------------------------------------------------------------
