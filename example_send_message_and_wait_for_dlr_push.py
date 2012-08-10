@@ -25,12 +25,15 @@ port = 9000
 sms_client = oneapi.SmsClient(username, password)
 sms_client.login()
 
+notify_url = 'http://{0}:{1}'.format(public_ip_address, port)
+# example:prepare-message-wit-notify-url
 sms = models.SMSRequest()
 sms.sender_address = address
 sms.address = address
 sms.message = 'Test message'
-sms.notify_url = 'http://{0}:{1}'.format(public_ip_address, port)
-#sms.callback_data = 
+# The url where the delivery notification will be pushed:
+sms.notify_url = notify_url
+# ----------------------------------------------------------------------------------------------------
 
 result = sms_client.send_sms(sms)
 

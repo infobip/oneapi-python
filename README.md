@@ -43,6 +43,20 @@ Possible statuses are: **DeliveredToTerminal**, **DeliveryUncertain**, **Deliver
 Messaging with notification push example
 -----------------------
 
+Same as with the standard messaging example, but when preparing your message:
+
+    sms = models.SMSRequest()
+    sms.sender_address = address
+    sms.address = address
+    sms.message = 'Test message'
+    # The url where the delivery notification will be pushed:
+    sms.notify_url = notify_url
+
+
+When the delivery notification is pushed to your server, you must process the body of the message with the following code:
+
+    TODO
+
 HLR example
 -----------------------
 
