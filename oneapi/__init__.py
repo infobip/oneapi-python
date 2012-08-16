@@ -198,9 +198,21 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
 
+    # ----------------------------------------------------------------------------------------------------
+    # Static methods used for http push events from the server:
+    # ----------------------------------------------------------------------------------------------------    
+
     @staticmethod
-    def unserialize_inbound_message(json):
-        return self.create_from_json(mod_models.InboundSmsMessages, json, False)
+    def unserialize_inbound_messages(json):
+        return mod_object.Conversions.from_json(mod_models.InboundSmsMessages, json, False)
+
+    @staticmethod
+    def unserialize_delivery_status(json):
+        return mod_object.Conversions.from_json(mod_models.DeliveryInfo, json['deliveryInfoNotification'], False)
+
+    @staticmethod
+    def unserialize_roaming_status(json):
+        return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatus, json['terminalRoamingStatus'], False)
 
 class DataConnectionProfileClient(AbstractOneApiClient):
 

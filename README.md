@@ -55,7 +55,8 @@ Same as with the standard messaging example, but when preparing your message:
 
 When the delivery notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
-    TODO
+    oneapi.SmsClient.unserialize_delivery_status(json)
+
 
 HLR example
 -----------------------
@@ -80,7 +81,8 @@ Similar to the previous example, but this time you must set the notification url
 
 When the roaming status notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
-    TODO
+    oneapi.SmsClient.unserialize_roaming_status(json)
+
 
 Retrieve inbound messages example
 -----------------------
@@ -96,7 +98,8 @@ Inbound message push example
 The subscription to recive inbound messages can be set up on our site.
 When the inbound message notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
-    TODO
+    oneapi.SmsClient.unserialize_inbound_messages(json)
+
 
 License
 -------
