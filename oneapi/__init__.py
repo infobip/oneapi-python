@@ -82,7 +82,7 @@ class AbstractOneApiClient:
         return result
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_http.execute_GET(self.get_rest_url(rest_path), params=params, 
+        response = mod_http.execute_GET(self.get_rest_url(rest_path), data=params, 
                                         headers=self.get_headers())
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
@@ -96,7 +96,7 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_POST(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_http.execute_POST(self.get_rest_url(rest_path), params=params, 
+        response = mod_http.execute_POST(self.get_rest_url(rest_path), data=params, 
                                          headers=self.get_headers())
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
@@ -111,7 +111,7 @@ class AbstractOneApiClient:
         return is_success, mod_json.loads(response.content)
 
     def execute_DELETE(self, rest_path, params=None, leave_undecoded=None):
-        response = mod_http.execute_DELETE(self.get_rest_url(rest_path), params=params, 
+        response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params, 
                                            headers=self.get_headers())
 
         mod_logging.debug('status code:{0}'.format(response.status_code))

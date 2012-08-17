@@ -31,11 +31,11 @@ class CustomRequest(mod_urllib2.Request):
     def get_method(self):
         return self.method
 
-def add_params(url, params):
+def add_params(url, urlencoded_params):
     if '?' in url:
-        return url + '&' + mod_urllib.urlencode(params)
+        return url + '&' + urlencoded_params
     else:
-        return url + '?' + mod_urllib.urlencode(params)
+        return url + '?' + urlencoded_params
 
 def parse_headers(headers):
     result = {}
@@ -48,20 +48,25 @@ def parse_headers(headers):
 
     return result
 
-def execute_request(method, url, params=None, body=None, headers=None):
+def urlencode_params(params):
+    if hasattr(params, 'items') or isinstance(params, tuple):
+        return mod_urllib.urlencode(params)
+
+    return params
+
+def execute_request(method, url, data=None, headers=None):
     if not method in VALID_METHODS:
         raise Exception('Invalid method %s' % method)
 
     mod_logging.debug('%s request to %s', method, url)
 
+    body = None
     opener = mod_urllib2.build_opener(mod_urllib2.HTTPHandler)
-    if params:
+    if data:
         if method in PARAMS_IN_BODY_METHODS:
-            if body:
-                raise Exception('No http body possible for %s with params (%s)' % (methods, params))
-            body = mod_urllib.urlencode(params)
+            body = urlencode_params(data)
         else:
-            url = add_params(url, params)
+            url = add_params(url, urlencode_params(data))
 
     request = CustomRequest(method, url)
 
@@ -81,17 +86,17 @@ def execute_request(method, url, params=None, body=None, headers=None):
 
     return CustomHttpResponse(http_code, headers, body)
 
-def execute_GET(url, params=None, body=None, headers=None):
-    return execute_request('GET', url, params=params, body=body, headers=headers)
+def execute_GET(url, data=None, headers=None):
+    return execute_request('GET', url, data=data, headers=headers)
 
-def execute_POST(url, params=None, body=None, headers=None):
-    return execute_request('POST', url, params=params, body=body, headers=headers)
+def execute_POST(url, data=None, headers=None):
+    return execute_request('POST', url, data=data, headers=headers)
 
-def execute_PUT(url, params=None, body=None, headers=None):
-    return execute_request('PUT', url, params=params, body=body, headers=headers)
+def execute_PUT(url, data=None, headers=None):
+    return execute_request('PUT', url, data=data, headers=headers)
 
-def execute_DELETE(url, params=None, body=None):
-    return execute_request('DELETE', url, params=params, body=body, headers=headers)
+def execute_DELETE(url, data=None, headers=None):
+    return execute_request('DELETE', url, data=data, headers=headers)
 
 if __name__ == '__main__':
     #print execute_GET('http://localhost', {'a': 'šđčćž/(/(/('})
