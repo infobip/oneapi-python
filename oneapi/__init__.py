@@ -209,10 +209,6 @@ class SmsClient(AbstractOneApiClient):
     def unserialize_delivery_status(json):
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoNotification, json, False)
 
-    @staticmethod
-    def unserialize_roaming_status(json):
-        return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatusNotification, json, False)
-
 class DataConnectionProfileClient(AbstractOneApiClient):
 
     def __init__(self, username, password, base_url=None):
@@ -241,6 +237,14 @@ class DataConnectionProfileClient(AbstractOneApiClient):
             json = mod_json.loads(result)
             assert json.has_key('roaming')
             return self.create_from_json(mod_models.TerminalRoamingStatus, json['roaming'], not is_success);
+
+    # ----------------------------------------------------------------------------------------------------
+    # Static methods used for http push events from the server:
+    # ----------------------------------------------------------------------------------------------------    
+
+    @staticmethod
+    def unserialize_roaming_status(json):
+        return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatusNotification, json, False)
 
 class CustomerProfileClient(AbstractOneApiClient):
 

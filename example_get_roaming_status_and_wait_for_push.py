@@ -42,6 +42,6 @@ if not requests:
 
 for method, path, http_body in requests:
     # example:on-roaming-status
-    roaming_status = oneapi.SmsClient.unserialize_roaming_status(http_body)
+    roaming_status = oneapi.DataConnectionProfileClient.unserialize_roaming_status(http_body)
     # ----------------------------------------------------------------------------------------------------
     print roaming_status
