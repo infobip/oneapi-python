@@ -211,10 +211,7 @@ class SmsClient(AbstractOneApiClient):
 
     @staticmethod
     def unserialize_roaming_status(json):
-        if isinstance(json, str) or isinstance(json, unicode):
-            json = mod_json.loads(json)
-        # TODO
-        return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatus, json['terminalRoamingStatus'], False)
+        return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatusNotification, json, False)
 
 class DataConnectionProfileClient(AbstractOneApiClient):
 

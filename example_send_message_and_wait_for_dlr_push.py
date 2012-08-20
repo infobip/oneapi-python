@@ -45,7 +45,7 @@ print result
 print 'Is success = ', result.is_success()
 print 'Client correlator = ', result.client_correlator
 
-# Wait for 30 seconds for push-es
+# Wait for 15 seconds for push-es
 server = dummyserver.DummyWebServer(port)
 server.start_wait_and_shutdown(15)
 

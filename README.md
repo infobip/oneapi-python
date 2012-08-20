@@ -76,12 +76,13 @@ HLR with notification push example
 
 Similar to the previous example, but this time you must set the notification url where the result will be pushed:
 
-    response = data_connection_client.retrieve_roaming_status(destination_address, notify_url)
+    response = data_connection_client.retrieve_roaming_status(address, notify_url)
 
 
 When the roaming status notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
-    TODO
+    roaming_status = oneapi.SmsClient.unserialize_roaming_status(http_body)
+
 
 Retrieve inbound messages example
 -----------------------
