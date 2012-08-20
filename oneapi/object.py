@@ -111,12 +111,13 @@ class Conversions:
     def fill_from_json(obj, json, is_error=False):
         """ Fill existing objects with JSON data. """
         assert obj
-        assert isinstance(json, dict)
 
         import oneapi.models as mod_models
 
         if isinstance(json, str) or isinstance(json, unicode):
             json = mod_json.loads(json)
+
+        assert isinstance(json, dict)
 
         if is_error:
             obj.exception = Conversions.from_json(mod_models.OneApiError, json, False)
@@ -143,6 +144,10 @@ class Conversions:
     def from_json(classs, json, is_error=False):
         """ Create a new object converted from JSON data. """
         assert classs
+
+        if isinstance(json, str) or isinstance(json, unicode):
+            json = mod_json.loads(json)
+
         assert isinstance(json, dict)
 
         result = classs()

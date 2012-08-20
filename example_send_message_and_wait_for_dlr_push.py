@@ -47,6 +47,15 @@ print 'Client correlator = ', result.client_correlator
 
 # Wait for 30 seconds for push-es
 server = dummyserver.DummyWebServer(port)
-server.start_wait_and_shutdown(30)
+server.start_wait_and_shutdown(15)
 
-print server.get_requests()
+requests = server.get_requests()
+if not requests:
+    print 'No requests received'
+    sys.exit(1)
+
+for method, path, body in requests:
+    # example:on-delivery-notification
+    delivery_status = oneapi.SmsClient.unserialize_delivery_status(body)
+    # ----------------------------------------------------------------------------------------------------
+    print delivery_status

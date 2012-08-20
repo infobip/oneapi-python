@@ -108,6 +108,14 @@ class DeliveryInfoList(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
+class DeliveryInfoNotification(mod_object.AbstractModel):
+
+    delivery_info = mod_object.ObjectFieldConverter(DeliveryInfo, json_field_name='deliveryInfoNotification.deliveryInfo')
+    callback_data = mod_object.FieldConverter('callbackData')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
 # ----------------------------------------------------------------------------------------------------
 # HLR models:
 # ----------------------------------------------------------------------------------------------------
