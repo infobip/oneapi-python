@@ -9,13 +9,5 @@ import oneapi as oneapi
 # of the following lines:
 
 # example:on-mo
-oneapi.SmsClient.unserialize_inbound_messages(http_body)
-# ----------------------------------------------------------------------------------------------------
-
-# example:on-delivery-notification
-oneapi.SmsClient.unserialize_delivery_status(http_body)
-# ----------------------------------------------------------------------------------------------------
-
-# example:on-roaming-status
-oneapi.SmsClient.unserialize_roaming_status(http_body)
+inbound_message = oneapi.SmsClient.unserialize_inbound_messages(http_body)
 # ----------------------------------------------------------------------------------------------------

@@ -54,8 +54,8 @@ if not requests:
     print 'No requests received'
     sys.exit(1)
 
-for method, path, body in requests:
+for method, path, http_body in requests:
     # example:on-delivery-notification
-    delivery_status = oneapi.SmsClient.unserialize_delivery_status(body)
+    delivery_status = oneapi.SmsClient.unserialize_delivery_status(http_body)
     # ----------------------------------------------------------------------------------------------------
     print delivery_status
