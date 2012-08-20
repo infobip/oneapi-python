@@ -101,7 +101,7 @@ class Tests(mod_unittest.TestCase):
         self.assertEquals(result.exception.variables[0], 'aaa')
 
     def test_client_correlator(self):
-        json = '{"resourceReference":{"resourceURL":"http://test.com/1/smsmessaging/outbound/38598854702/requests/hzmrjiywg5"}}'
+        json = '{"resourceReference":{"resourceURL":"http://test.com/1/smsmessaging/outbound/38598123456/requests/hzmrjiywg5"}}'
 
         result = mod_object.Conversions.from_json(mod_models.ResourceReference, json, is_error=False)
 
