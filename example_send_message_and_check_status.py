@@ -12,7 +12,7 @@ import oneapi.dummyserver as dummyserver
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 4:
     print 'Please enter username, password and address'
     sys.exit(1)
 

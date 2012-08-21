@@ -81,7 +81,7 @@ Similar to the previous example, but this time you must set the notification url
 
 When the roaming status notification is pushed to your server as a HTTP POST request, you must process the body of the message with the following code:
 
-    roaming_status = oneapi.SmsClient.unserialize_roaming_status(http_body)
+    roaming_status = oneapi.DataConnectionProfileClient.unserialize_roaming_status(http_body)
 
 
 Retrieve inbound messages example
