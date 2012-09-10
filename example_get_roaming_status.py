@@ -12,14 +12,13 @@ import oneapi.dummyserver as dummyserver
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
-if len(sys.argv) < 2:
-    print 'Please enter username and password'
+if len(sys.argv) < 4:
+    print 'Please enter username, password and address'
     sys.exit(1)
 
 username = sys.argv[1]
 password = sys.argv[2]
-
-destination_address = raw_input('Enter the destination address?')
+destination_address = sys.argv[3]
 
 # example:data-connection-client
 data_connection_client = oneapi.DataConnectionProfileClient(username, password)
