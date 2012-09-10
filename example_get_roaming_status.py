@@ -25,6 +25,8 @@ data_connection_client = oneapi.DataConnectionProfileClient(username, password)
 data_connection_client.login()
 # ----------------------------------------------------------------------------------------------------
 
+# example:retrieve-roaming-status
 response = data_connection_client.retrieve_roaming_status(destination_address)
+# ----------------------------------------------------------------------------------------------------
 
 print response

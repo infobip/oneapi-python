@@ -69,7 +69,8 @@ Initialize and login the data connection client:
 
 Retrieve the roaming status (HLR):
 
-    TODO
+    response = data_connection_client.retrieve_roaming_status(destination_address)
+
 
 HLR with notification push example
 -----------------------
