@@ -22,7 +22,6 @@ destination_address = sys.argv[3]
 
 # example:data-connection-client
 data_connection_client = oneapi.DataConnectionProfileClient(username, password)
-data_connection_client.login()
 # ----------------------------------------------------------------------------------------------------
 
 # example:retrieve-roaming-status

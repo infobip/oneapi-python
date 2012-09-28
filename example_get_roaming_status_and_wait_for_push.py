@@ -25,7 +25,6 @@ port = 9000
 notify_url = 'http://{0}:{1}'.format(public_ip_address, port)
 
 data_connection_client = oneapi.DataConnectionProfileClient(username, password)
-data_connection_client.login()
 
 # example:retrieve-roaming-status-with-notify-url
 response = data_connection_client.retrieve_roaming_status(address, notify_url)

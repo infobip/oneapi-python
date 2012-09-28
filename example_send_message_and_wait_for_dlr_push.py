@@ -23,7 +23,6 @@ address = sys.argv[4]
 port = 9000
 
 sms_client = oneapi.SmsClient(username, password)
-sms_client.login()
 
 notify_url = 'http://{0}:{1}'.format(public_ip_address, port)
 # example:prepare-message-with-notify-url

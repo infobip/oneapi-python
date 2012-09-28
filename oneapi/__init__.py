@@ -4,6 +4,7 @@ import pdb
 
 import json as mod_json
 import logging as mod_logging
+import base64 as mod_base64
 
 import http as mod_http
 import models as mod_models
@@ -35,7 +36,6 @@ class AbstractOneApiClient:
         self.raise_exception = True
 
     def login(self):
-
         params = {
                 'username': self.username,
                 'password': self.password,
@@ -77,8 +77,13 @@ class AbstractOneApiClient:
     def get_headers(self):
         result = {}
         result["User-Agent"] = "OneApi-python-{0}".format(self.VERSION)
+
         if self.oneapi_authentication and self.oneapi_authentication.ibsso_token:
             result['Authorization'] = 'IBSSO {0}'.format(self.oneapi_authentication.ibsso_token)
+        else:
+            auth_string = '%s:%s' % (self.username, self.password)
+            auth_string = mod_base64.encodestring(auth_string)
+            result['Authorization'] = 'Basic {0}'.format(auth_string)
         return result
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=None):

@@ -18,7 +18,6 @@ username = sys.argv[1]
 password = sys.argv[2]
 
 customer_profile_client = oneapi.CustomerProfileClient(username, password)
-customer_profile_client.login()
 
 account_balance = customer_profile_client.get_account_balance()
 

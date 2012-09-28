@@ -24,10 +24,6 @@ address = sys.argv[3]
 sms_client = oneapi.SmsClient(username, password)
 # ----------------------------------------------------------------------------------------------------
 
-# example:login-sms-client
-sms_client.login()
-# ----------------------------------------------------------------------------------------------------
-
 # example:prepare-message-without-notify-url
 sms = models.SMSRequest()
 sms.sender_address = address

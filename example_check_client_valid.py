@@ -13,7 +13,6 @@ username = sys.argv[1]
 password = sys.argv[2]
 
 sms_client = oneapi.SmsClient(username, password);
-sms_client.login()
 
 data_connection_client = oneapi.DataConnectionProfileClient(username, 'wrongpassword');
 data_connection_client.client()

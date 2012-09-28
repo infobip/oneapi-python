@@ -9,11 +9,6 @@ First initialize the messaging client using your username and password:
     sms_client = oneapi.SmsClient(username, password)
 
 
-Then login with the client:
-
-    sms_client.login()
-
-
 An exception will be thrown if your username and/or password are incorrect.
 
 Prepare the message:
@@ -64,7 +59,6 @@ HLR example
 Initialize and login the data connection client:
 
     data_connection_client = oneapi.DataConnectionProfileClient(username, password)
-    data_connection_client.login()
 
 
 Retrieve the roaming status (HLR):
