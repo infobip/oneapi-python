@@ -74,11 +74,27 @@ def execute_request(method, url, data=None, headers=None):
         for key, value in headers.items():
             request.add_header(key, value)
 
-    url = opener.open(request, data=body)
+    try:
+        url = opener.open(request, data=body)
 
-    http_code = url.getcode()
-    headers = parse_headers(url.headers.headers)
-    body = url.read()
+
+        http_code = url.getcode()
+        headers = headers
+        body = url.read()
+    except Exception, e:
+        if hasattr(e, 'code'):
+            http_code = e.code
+        else:
+            # Withoud http code => non-http exception:
+            raise e
+
+        if hasattr(e, 'headers'):
+            headers = {}
+            for key, value in e.headers.items():
+                headers[key] = value
+
+        if hasattr(e, 'read'):
+            body = e.read()
 
     mod_logging.debug('http response code:%s', http_code)
     mod_logging.debug('http response headers:%s', headers)
