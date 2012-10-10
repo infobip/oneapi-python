@@ -83,7 +83,7 @@ class AbstractOneApiClient:
         else:
             auth_string = '%s:%s' % (self.username, self.password)
             auth_string = mod_base64.encodestring(auth_string)
-            result['Authorization'] = 'Basic {0}'.format(auth_string)
+            result['Authorization'] = 'Basic {0}'.format(auth_string).strip()
         return result
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=None):
