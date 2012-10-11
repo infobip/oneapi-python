@@ -214,6 +214,42 @@ class SmsClient(AbstractOneApiClient):
     def unserialize_delivery_status(json):
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoNotification, json, False)
 
+class UssdClient(AbstractOneApiClient):
+    """
+    Warning, this is an experimental feature. The API may change!
+    """
+
+    def __init__(self, username, password, base_url=None):
+        AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
+
+    def send_message(self, address, message):
+        params = {
+                'address': address,
+                'message': message,
+        }
+
+        is_success, json = self.execute_POST(
+                '/1/ussd/outbound',
+                params = params
+        )
+
+        return self.create_from_json(mod_models.InboundSmsMessage, json, not is_success)
+
+    def close_session(self, address, message):
+        params = {
+                'address': address,
+                'message': message,
+                'stopSession': 'true',
+        }
+
+        is_success, json = self.execute_POST(
+                '/1/ussd/outbound',
+                params = params,
+                leave_undecoded = True
+        )
+
+        return True
+
 class DataConnectionProfileClient(AbstractOneApiClient):
 
     def __init__(self, username, password, base_url=None):
