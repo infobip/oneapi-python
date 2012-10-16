@@ -71,12 +71,12 @@ def execute_request(method, url, data=None, headers=None):
     request = CustomRequest(method, url)
 
     if headers:
+        mod_logging.debug('Headers: %s', headers)
         for key, value in headers.items():
             request.add_header(key, value)
 
     try:
         url = opener.open(request, data=body)
-
 
         http_code = url.getcode()
         headers = headers
