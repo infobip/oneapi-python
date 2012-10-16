@@ -95,6 +95,12 @@ def execute_request(method, url, data=None, headers=None):
 
         if hasattr(e, 'read'):
             body = e.read()
+    finally:
+        try:
+            print 'closing'
+            url.close()
+        except Exception, ignore:
+            pass
 
     mod_logging.debug('http response code:%s', http_code)
     mod_logging.debug('http response headers:%s', headers)
