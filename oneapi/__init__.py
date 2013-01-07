@@ -137,6 +137,12 @@ class AbstractOneApiClient:
 
         return result
 
+class OneApiClient(AbstractOneApiClient):
+    """ Generic OneApi client. May be used for direct rest requests. """
+
+    def __init__(self, username, password, base_url=None):
+        AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
+
 class SmsClient(AbstractOneApiClient):
 
     def __init__(self, username, password, base_url=None):
