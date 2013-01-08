@@ -97,7 +97,6 @@ def execute_request(method, url, data=None, headers=None):
             body = e.read()
     finally:
         try:
-            print 'closing'
             url.close()
         except Exception, ignore:
             pass
