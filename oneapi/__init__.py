@@ -122,6 +122,8 @@ class AbstractOneApiClient:
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
 
+        is_success = 200 <= response.status_code <= 299
+
         if leave_undecoded:
             return is_success, response.content
 
