@@ -163,6 +163,9 @@ class SmsClient(AbstractOneApiClient):
             'senderName': 'tel:{0}'.format(sms.sender_address),
         }
 
+        if sms.mo_response_key:
+            params['moResponseKey'] = sms.mo_response_key
+
         if sms.notify_url:
             params['notifyURL'] = sms.notify_url
         if sms.callback_data:

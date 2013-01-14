@@ -52,6 +52,7 @@ class SMSRequest(mod_object.AbstractModel):
     sender_name = mod_object.FieldConverter('senderName')
     message = mod_object.FieldConverter()
     address = mod_object.FieldConverter()
+    mo_response_key = mod_object.FieldConverter('moResponseKey')
 
     # Used later for querying about the message status.
     client_correlator = mod_object.FieldConverter('clientCorrelator')
