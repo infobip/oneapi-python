@@ -115,6 +115,21 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
+    def execute_PUT(self, rest_path, params=None, leave_undecoded=None):
+        response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params, 
+                                         headers=self.get_headers())
+
+        mod_logging.debug('status code:{0}'.format(response.status_code))
+        mod_logging.debug('params: {0}'.format(params))
+        mod_logging.debug('content:{0}'.format(response.content))
+
+        is_success = 200 <= response.status_code <= 299
+
+        if leave_undecoded:
+            return is_success, response.content
+
+        return is_success, mod_json.loads(response.content)
+
     def execute_DELETE(self, rest_path, params=None, leave_undecoded=None):
         response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params, 
                                            headers=self.get_headers())
