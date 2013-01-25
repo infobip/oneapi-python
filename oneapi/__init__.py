@@ -74,8 +74,13 @@ class AbstractOneApiClient:
 
         return is_success
 
-    def get_headers(self):
-        result = {}
+    def get_headers(self, headers=None):
+        assert headers is None or isinstance(headers, dict)
+
+        result = headers
+        if result is None:
+            result = {}
+
         result["User-Agent"] = "OneApi-python-{0}".format(self.VERSION)
 
         if self.oneapi_authentication and self.oneapi_authentication.ibsso_token:
@@ -86,9 +91,9 @@ class AbstractOneApiClient:
             result['Authorization'] = 'Basic {0}'.format(auth_string).strip()
         return result
 
-    def execute_GET(self, rest_path, params=None, leave_undecoded=None):
+    def execute_GET(self, rest_path, params=None, leave_undecoded=None, headers=None):
         response = mod_http.execute_GET(self.get_rest_url(rest_path), data=params, 
-                                        headers=self.get_headers())
+                                        headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
@@ -100,9 +105,9 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_POST(self, rest_path, params=None, leave_undecoded=None):
+    def execute_POST(self, rest_path, params=None, leave_undecoded=None, headers=None):
         response = mod_http.execute_POST(self.get_rest_url(rest_path), data=params, 
-                                         headers=self.get_headers())
+                                         headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -115,9 +120,9 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_PUT(self, rest_path, params=None, leave_undecoded=None):
+    def execute_PUT(self, rest_path, params=None, leave_undecoded=None, headers=None):
         response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params, 
-                                         headers=self.get_headers())
+                                         headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -130,9 +135,9 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_DELETE(self, rest_path, params=None, leave_undecoded=None):
+    def execute_DELETE(self, rest_path, params=None, leave_undecoded=None, headers=None):
         response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params, 
-                                           headers=self.get_headers())
+                                           headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
