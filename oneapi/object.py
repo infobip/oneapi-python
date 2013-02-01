@@ -175,7 +175,7 @@ class AbstractModel:
         # reset class attributes for this instance:
         for class_attribute in dir(self.__class__):
             class_attribute_value = getattr(self.__class__, class_attribute)
-            if isinstance(class_attribute_value, ObjectFieldConverter):
+            if isinstance(class_attribute_value, FieldConverter):
                 setattr(self, class_attribute, None)
 
     def is_success(self):
