@@ -58,7 +58,7 @@ def execute_request(method, url, data=None, headers=None):
     if not method in VALID_METHODS:
         raise Exception('Invalid method %s' % method)
 
-    mod_logging.debug('%s request to %s', method, url)
+    mod_logging.debug('%s to %s with %s', method, url, data)
 
     body = None
     opener = mod_urllib2.build_opener(mod_urllib2.HTTPHandler)
