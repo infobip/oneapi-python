@@ -12,7 +12,7 @@ password = 'your_password_here'
 # Request a API token by sending a /login POST request:
 authentication_request_json_body = '{"username":"%s", "password":"%s"}' % (username, password)
 req = urllib2.Request(
-        'https://api.parseco.com/1/customerProfile/login',
+        'https://oneapi.infobip.com/1/customerProfile/login',
         data = authentication_request_json_body)
 
 result_json = urllib2.urlopen(req).read()
@@ -26,7 +26,7 @@ token = result_json['login']['ibAuthCookie']
 
 # Now use this token when calling the API for all other methods:
 req = urllib2.Request(
-        'http://api.parseco.com/1/customerProfile',
+        'http://oneapi.infobip.com/1/customerProfile',
         headers={'Authorization': 'IBSSO ' + token})
 
 result_json = urllib2.urlopen(req).read()

@@ -11,7 +11,7 @@ import models as mod_models
 import object as mod_object
 import utils as mod_utils
 
-DEFAULT_BASE_URL = 'https://api.parseco.com'
+DEFAULT_BASE_URL = 'https://oneapi.infobip.com'
 
 class AbstractOneApiClient:
 
