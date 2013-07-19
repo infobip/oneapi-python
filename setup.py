@@ -24,7 +24,7 @@ mod_distutilscore.setup(
     license = 'Apache License, Version 2.0',
     author = 'Tomo Krajina',
     author_email = 'tkrajina@gmail.com',
-    url = 'https://github.com/parseco/oneapi-python',
+    url = 'https://github.com/infobip/oneapi-python',
     packages = [
         'oneapi',
    ],

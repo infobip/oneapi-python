@@ -17,7 +17,7 @@ basic_authorization_string = basic_authorization_string.strip()
 
 # Send any API request:
 req = urllib2.Request(
-        'http://api.parseco.com/1/customerProfile',
+        'http://oneapi.infobip.com/1/customerProfile',
         headers={'Authorization': 'Basic ' + basic_authorization_string})
 
 # Read and process the response:
