@@ -121,4 +121,4 @@ def execute_DELETE(url, data=None, headers=None):
 
 if __name__ == '__main__':
     #print execute_GET('http://localhost', {'a': 'šđčćž/(/(/('})
-    print execute_GET('https://api.parseco.com/status', {'a': 'šđčćž/(/(/('})
+    print execute_GET('https://oneapi.infobip.com/status', {'a': 'šđčćž/(/(/('})
