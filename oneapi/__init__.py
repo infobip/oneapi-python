@@ -233,6 +233,55 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
 
+    def subscribe_delivery_status(self, sms):
+
+        params = {
+                'callbackData' : sms.callback_data,
+                'notifyURL' : sms.notify_url,
+                'filterCriteria' : sms.filter_criteria,
+        }
+
+        is_success, result = self.execute_POST(
+                '/1/smsmessaging/outbound/'
+                '{0}/subscriptions'.format(sms.sender_address),
+                params = params
+        )
+
+        return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
+
+    def delete_delivery_status_subscription(self, resource_url):
+
+        is_success = self.execute_DELETE(
+                resource_url
+                )
+
+        return is_success
+
+    def subscribe_messages_sent_notification(self, sms):
+
+        params = {
+                'callbackData' : sms.callback_data,
+                'notifyURL' : sms.notify_url,
+                'destinationAddress' : sms.address,
+                }
+        if sms.filter_criteria: params['criteria'] = sms.filter_criteria
+        if sms.client_correlator: params['client_correlator'] = sms.client_correlator
+
+        is_success, result = self.execute_POST(
+                '/1/smsmessaging/inbound/subscriptions',
+                params = params,
+        )
+
+        return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
+
+    def delete_messages_sent_subscription(self, resource_url):
+
+        is_success = self.execute_DELETE(
+                resource_url
+                )
+
+        return is_success
+
     # ----------------------------------------------------------------------------------------------------
     # Static methods used for http push events from the server:
     # ----------------------------------------------------------------------------------------------------    
