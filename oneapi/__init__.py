@@ -91,7 +91,7 @@ class AbstractOneApiClient:
             result['Authorization'] = 'Basic {0}'.format(auth_string).strip()
         return result
 
-    def execute_GET(self, rest_path, params=None, leave_undecoded=None, headers=None):
+    def execute_GET(self, rest_path, params=None, leave_undecoded=False, headers=None):
         response = mod_http.execute_GET(self.get_rest_url(rest_path), data=params, 
                                         headers=self.get_headers(headers))
 
@@ -105,9 +105,9 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_POST(self, rest_path, params=None, leave_undecoded=None, headers=None):
+    def execute_POST(self, rest_path, params=None, leave_undecoded=False, headers=None, data_format=None):
         response = mod_http.execute_POST(self.get_rest_url(rest_path), data=params, 
-                                         headers=self.get_headers(headers))
+                                         headers=self.get_headers(headers), data_format=data_format)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -120,7 +120,7 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_PUT(self, rest_path, params=None, leave_undecoded=None, headers=None):
+    def execute_PUT(self, rest_path, params=None, leave_undecoded=False, headers=None):
         response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params, 
                                          headers=self.get_headers(headers))
 
@@ -135,7 +135,7 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_DELETE(self, rest_path, params=None, leave_undecoded=None, headers=None):
+    def execute_DELETE(self, rest_path, params=None, leave_undecoded=False, headers=None):
         response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params, 
                                            headers=self.get_headers(headers))
 
@@ -159,6 +159,11 @@ class AbstractOneApiClient:
 
         return result
 
+    def create_to_json(self, json):
+        result = mod_object.Conversions.to_json(json);
+
+        return result
+
 class OneApiClient(AbstractOneApiClient):
     """ Generic OneApi client. May be used for direct rest requests. """
 
@@ -170,35 +175,56 @@ class SmsClient(AbstractOneApiClient):
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
-    def send_sms(self, sms):
+    def send_sms(self, sms, header=None, data_format=None):
         client_correlator = sms.client_correlator
         if not client_correlator:
             client_correlator = mod_utils.get_random_alphanumeric_string()
 
-        params = {
-            'senderAddress': sms.sender_address,
-            'address': sms.address,
-            'message': sms.message,
-            'clientCorrelator': client_correlator,
-            'senderName': 'tel:{0}'.format(sms.sender_address),
-        }
+        if data_format == "json":
+            params = {
+                    'address' : [
+                        'tel:' + sms.address
+                        ],
+                    'clientCorrelator': client_correlator,
+                    'senderAddress': sms.sender_address,
+                    'outboundSMSTextMessage': {
+                        'message' : sms.message
+                        },
+                    'senderName': 'tel:{0}'.format(sms.sender_address),
+                    'receiptRequest': {
+                        'callbackData': sms.callback_data,
+                        'notifyURL': sms.notify_url
+                        }
+                    }
+        elif data_format == "url":
+            params = {
+                    'senderAddress': sms.sender_address,
+                    'address': sms.address,
+                    'message': sms.message,
+                    'clientCorrelator': client_correlator,
+                    'senderName': 'tel:{0}'.format(sms.sender_address),
+                    }
 
-        if sms.mo_response_key:
-            params['moResponseKey'] = sms.mo_response_key
+            if sms.mo_response_key:
+                params['moResponseKey'] = sms.mo_response_key
 
-        if sms.notify_url:
-            params['notifyURL'] = sms.notify_url
-        if sms.callback_data:
-            params['callbackData'] = sms.callback_data
+            if sms.notify_url:
+                params['notifyURL'] = sms.notify_url
+            if sms.callback_data:
+                params['callbackData'] = sms.callback_data
+        else:
+            raise Exception("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
                 '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
-                params = params
+                params = params,
+                headers = header,
+                data_format = data_format
         )
 
         return self.create_from_json(mod_models.ResourceReference, result, not is_success)
 
-    def query_delivery_status(self, client_correlator_or_resource_reference):
+    def query_delivery_status(self, client_correlator_or_resource_reference, sender):
         if hasattr(client_correlator_or_resource_reference, 'client_correlator'):
             client_correlator = client_correlator_or_resource_reference.client_correlator
         else:
@@ -211,7 +237,7 @@ class SmsClient(AbstractOneApiClient):
         }
 
         is_success, result = self.execute_GET(
-                '/1/smsmessaging/outbound/TODO/requests/{0}/deliveryInfos'.format(client_correlator),
+                '/1/smsmessaging/outbound/{0}/requests/{1}/deliveryInfos'.format(sender, client_correlator),
                 params = params
         )
 
@@ -232,6 +258,90 @@ class SmsClient(AbstractOneApiClient):
         )
 
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
+
+    def subscribe_delivery_status(self, sms, header=None, data_format=None):
+
+        if data_format == "json":
+            params = {
+                    'deliveryReceiptSubscription' : {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                        },
+                        'filterCriteria' : sms.filter_criteria
+                        }
+                    }
+        elif data_format == "url":
+            params = {
+                    'callbackData' : sms.callback_data,
+                    'notifyURL' : sms.notify_url,
+                    'filterCriteria' : sms.filter_criteria
+                    }
+        else:
+            raise Exception("invalid asked data format (supported url or json")
+
+        is_success, result = self.execute_POST(
+                '/1/smsmessaging/outbound/'
+                '{0}/subscriptions'.format(sms.sender_address),
+                params = params,
+                headers = header,
+                data_format = data_format
+        )
+
+        return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
+
+    def delete_delivery_status_subscription(self, resource_url):
+
+        is_success = self.execute_DELETE(
+                resource_url
+                )
+
+        return is_success
+
+    def subscribe_messages_sent_notification(self, sms, header=None, data_format=None):
+
+        if data_format == "json":
+            params = {
+                    'subscription' : {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                            },
+                        'criteria' : sms.filter_criteria,
+                        'destinationAddress' : sms.address,
+                        'clientCorrelator' : sms.client_correlator
+                        }
+                    }
+        elif data_format == "url":
+            params = {
+                    'callbackData' : sms.callback_data,
+                    'notifyURL' : sms.notify_url,
+                    'destinationAddress' : sms.address
+                    }
+            if sms.filter_criteria:
+                params['criteria'] = sms.filter_criteria
+            if sms.client_correlator:
+                params['client_correlator'] = sms.client_correlator
+                #resourceURL
+        else:
+            raise Exception("invalid asked data format (supported url or json")
+
+        is_success, result = self.execute_POST(
+                '/1/smsmessaging/inbound/subscriptions',
+                params = params,
+                headers = header,
+                data_format = data_format
+        )
+
+        return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
+
+    def delete_messages_sent_subscription(self, resource_url):
+
+        is_success = self.execute_DELETE(
+                resource_url
+                )
+
+        return is_success
 
     # ----------------------------------------------------------------------------------------------------
     # Static methods used for http push events from the server:

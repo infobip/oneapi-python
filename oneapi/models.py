@@ -84,11 +84,13 @@ class ResourceReference(mod_object.AbstractModel):
 
     # The client correlator for this message. This value may be used to query 
     # for message status later.
-    client_correlator = mod_object.LastPartOfUrlFieldConverter('resourceReference.resourceURL')
+    sender = mod_object.GetPartsOfUrlFieldConverter('resourceReference.resourceURL', -3)
+    client_correlator = mod_object.GetPartsOfUrlFieldConverter('resourceReference.resourceURL', -1)
 
-    def __init__(self, client_correlator=None):
+    def __init__(self, client_correlator=None, sender=None):
         mod_object.AbstractModel.__init__(self)
 
+        self.sender = sender
         self.client_correlator = client_correlator
 
 # ----------------------------------------------------------------------------------------------------
@@ -113,6 +115,38 @@ class DeliveryInfoNotification(mod_object.AbstractModel):
 
     delivery_info = mod_object.ObjectFieldConverter(DeliveryInfo, json_field_name='deliveryInfoNotification.deliveryInfo')
     callback_data = mod_object.FieldConverter('deliveryInfoNotification.callbackData')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+# ----------------------------------------------------------------------------------------------------
+# Subscription to notifications:
+# ----------------------------------------------------------------------------------------------------
+
+class CallbackReference(mod_object.AbstractModel):
+
+    callback_data = mod_object.FieldConverter('callbackData')
+    notify_url = mod_object.FieldConverter('notifyURL')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class DeliveryReceiptSubscription(mod_object.AbstractModel):
+
+    callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='deliveryReceiptSubscription.callbackReference')
+    filter_criteria = mod_object.FieldConverter('deliveryReceiptSubscription.filterCriteria')
+    resource_url = mod_object.FieldConverter('deliveryReceiptSubscription.resourceURL')
+
+    def __init__(self):
+        mod_object.AbstractModel.__init__(self)
+
+class InboundSMSMessageReceiptSubscription(mod_object.AbstractModel):
+
+    callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='subscription.callbackReference')
+    criteria = mod_object.FieldConverter('subscription.criteria')
+    destination_address = mod_object.FieldConverter('subscription.destinationAddress')
+    client_correlator = mod_object.FieldConverter('subscription.clientCorrelator')
+    resource_url = mod_object.FieldConverter('subscription.resourceURL')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)

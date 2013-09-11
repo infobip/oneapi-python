@@ -5,7 +5,7 @@ import pdb
 """
 Note, requests are much better than this
 """
-
+import json as mod_json
 import logging as mod_logging
 import urllib2 as mod_urllib2
 import urllib as mod_urllib
@@ -54,7 +54,7 @@ def urlencode_params(params):
 
     return params
 
-def execute_request(method, url, data=None, headers=None):
+def execute_request(method, url, data=None, headers=None, data_format=None):
     if not method in VALID_METHODS:
         raise Exception('Invalid method %s' % method)
 
@@ -64,11 +64,17 @@ def execute_request(method, url, data=None, headers=None):
     opener = mod_urllib2.build_opener(mod_urllib2.HTTPHandler)
     if data:
         if method in PARAMS_IN_BODY_METHODS:
-            body = urlencode_params(data)
+            if data_format == "json":
+                body = mod_json.JSONEncoder().encode(data)
+            else:
+                body = urlencode_params(data)
         else:
             url = add_params(url, urlencode_params(data))
 
     request = CustomRequest(method, url)
+
+    if data_format == "json":
+        headers["content-type"] = "application/json"
 
     if headers:
         mod_logging.debug('Headers: %s', headers)
@@ -110,8 +116,8 @@ def execute_request(method, url, data=None, headers=None):
 def execute_GET(url, data=None, headers=None):
     return execute_request('GET', url, data=data, headers=headers)
 
-def execute_POST(url, data=None, headers=None):
-    return execute_request('POST', url, data=data, headers=headers)
+def execute_POST(url, data=None, headers=None, data_format=None):
+    return execute_request('POST', url, data=data, headers=headers, data_format=data_format)
 
 def execute_PUT(url, data=None, headers=None):
     return execute_request('PUT', url, data=data, headers=headers)
