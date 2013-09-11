@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pdb
+import argparse
 
 import sys as sys
 import logging as logging
@@ -12,36 +13,36 @@ import oneapi.dummyserver as dummyserver
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
-if len(sys.argv) < 5:
-    print 'Please enter username, password, dest, source, content-type (url|json), [accept-type]'
-    sys.exit(1)
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--server", help="Address of the server (default=https://oneapi.infobip.com)")
+parser.add_argument("username", help="Login")
+parser.add_argument("password", help="Password")
+parser.add_argument("sender", help="From address")
+parser.add_argument("-d", "--data_format", help="Type of data used in request, can be url or json (default=url)")
+parser.add_argument("-a", "--accept", help="Type of data used for response, can be url or json (default=url)")
+args = parser.parse_args()
 
-username = sys.argv[1]
-password = sys.argv[2]
-sender = sys.argv[3]
-data_format = sys.argv[4]
+data_format = "url"
+if args.data_format:
+    if (args.data_format == "json"):
+        data_format = "json"
 
-if len(sys.argv) == 6:
-   accept = sys.argv[5]
-
-if data_format != "json":
-   data_format = "url"
+header = None
+if 'accept' in locals():
+    if args.accept:
+        header = {"accept" : args.accept}
 
 # example:initialize-sms-client
-sms_client = oneapi.SmsClient(username, password)
+sms_client = oneapi.SmsClient(username, password, args.server)
 # ----------------------------------------------------------------------------------------------------
 
 # example:prepare-message-without-notify-url
 sms = models.SMSRequest()
-sms.sender_address = sender
+sms.sender_address = args.sender
 sms.notify_url = 'Any URL'
 sms.callback_data = 'Any string'
 sms.filter_criteria = "Urgent"
 # ----------------------------------------------------------------------------------------------------
-
-header=None
-if 'accept' in locals():
-   header = {"accept" : accept}
 
 # example:send-message
 result = sms_client.subscribe_delivery_status(sms, header, data_format)
