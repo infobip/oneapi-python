@@ -116,8 +116,8 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
 def execute_GET(url, data=None, headers=None):
     return execute_request('GET', url, data=data, headers=headers)
 
-def execute_POST(url, data=None, headers=None):
-    return execute_request('POST', url, data=data, headers=headers)
+def execute_POST(url, data=None, headers=None, data_format=None):
+    return execute_request('POST', url, data=data, headers=headers, data_format=data_format)
 
 def execute_PUT(url, data=None, headers=None):
     return execute_request('PUT', url, data=data, headers=headers)
