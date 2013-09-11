@@ -198,7 +198,7 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.ResourceReference, result, not is_success)
 
-    def query_delivery_status(self, client_correlator_or_resource_reference):
+    def query_delivery_status(self, client_correlator_or_resource_reference, sender):
         if hasattr(client_correlator_or_resource_reference, 'client_correlator'):
             client_correlator = client_correlator_or_resource_reference.client_correlator
         else:
@@ -211,7 +211,7 @@ class SmsClient(AbstractOneApiClient):
         }
 
         is_success, result = self.execute_GET(
-                '/1/smsmessaging/outbound/TODO/requests/{0}/deliveryInfos'.format(client_correlator),
+                '/1/smsmessaging/outbound/{0}/requests/{1}/deliveryInfos'.format(sender, client_correlator),
                 params = params
         )
 

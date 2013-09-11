@@ -44,12 +44,13 @@ if not result.is_success():
 
 print result
 print 'Is success = ', result.is_success()
+print 'Sender = ', result.sender
 print 'Client correlator = ', result.client_correlator
 
 # Few seconds later we can check for the sending status
 time.sleep(10)
 
 # example:query-for-delivery-status
-query_status = sms_client.query_delivery_status(client_correlator)
+query_status = sms_client.query_delivery_status(client_correlator, sender)
 delivery_status = query_status.delivery_info[0].delivery_status
 # ----------------------------------------------------------------------------------------------------

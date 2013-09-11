@@ -21,10 +21,11 @@ class FieldConverter:
     def to_json(self, value):
         return value
 
-class LastPartOfUrlFieldConverter(FieldConverter):
+class GetPartsOfUrlFieldConverter(FieldConverter):
 
-    def __init__(self, json_field_name=None):
+    def __init__(self, json_field_name=None, where=-1):
         FieldConverter.__init__(self, json_field_name=json_field_name)
+        self.where = where
 
     def from_json(self, value):
         if value == None:
@@ -32,7 +33,10 @@ class LastPartOfUrlFieldConverter(FieldConverter):
 
         parts = value.split('/')
 
-        return parts[-1]
+        if ((self.where >= 0 and self.where < len(parts)) or  (self.where < 0 and -self.where > len(parts))):
+                return None
+
+        return parts[self.where]
 
     def to_json(self, value):
         return value

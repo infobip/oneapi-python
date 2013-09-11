@@ -84,11 +84,13 @@ class ResourceReference(mod_object.AbstractModel):
 
     # The client correlator for this message. This value may be used to query 
     # for message status later.
-    client_correlator = mod_object.LastPartOfUrlFieldConverter('resourceReference.resourceURL')
+    sender = mod_object.GetPartsOfUrlFieldConverter('resourceReference.resourceURL', -3)
+    client_correlator = mod_object.GetPartsOfUrlFieldConverter('resourceReference.resourceURL', -1)
 
-    def __init__(self, client_correlator=None):
+    def __init__(self, client_correlator=None, sender=None):
         mod_object.AbstractModel.__init__(self)
 
+        self.sender = sender
         self.client_correlator = client_correlator
 
 # ----------------------------------------------------------------------------------------------------
