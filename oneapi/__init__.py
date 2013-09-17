@@ -301,6 +301,7 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
 
+    # TODO (pd) only subscriptionID should be passed into this method
     def delete_delivery_status_subscription(self, resource_url):
 
         is_success = self.execute_DELETE(
@@ -346,6 +347,7 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
 
+    # TODO (pd) only subscriptionID should be passed into this method
     def delete_messages_sent_subscription(self, resource_url):
 
         is_success = self.execute_DELETE(
