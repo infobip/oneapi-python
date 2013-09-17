@@ -33,7 +33,7 @@ if 'accept' in locals():
         header = {"accept" : args.accept}
 
 # example:initialize-sms-client
-sms_client = oneapi.SmsClient(username, password, args.server)
+sms_client = oneapi.SmsClient(args.username, args.password, args.server)
 # ----------------------------------------------------------------------------------------------------
 
 # example:prepare-message-without-notify-url
@@ -61,5 +61,5 @@ print 'Resource URL = ', result.resource_url
 time.sleep(10)
 
 # example:query-for-delivery-status
-sms_client.delete_delivery_status_subscription(resource_url, header, data_format)
+sms_client.delete_delivery_status_subscription(resource_url)
 # ----------------------------------------------------------------------------------------------------

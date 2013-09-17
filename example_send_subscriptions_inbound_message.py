@@ -9,7 +9,7 @@ import time as time
 
 import oneapi as oneapi
 import oneapi.models as models
-import oneapi.dummyserver as dummyserver
+import oneapi.utils as mod_utils
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 
@@ -41,7 +41,7 @@ sms = models.SMSRequest()
 sms.address = args.address
 sms.notify_url = 'Any URL'
 sms.callback_data = 'Any string'
-sms.filter_criteria = "Urgent"
+sms.filter_criteria = "py_test_"+mod_utils.get_random_alphanumeric_string()
 # ----------------------------------------------------------------------------------------------------
 
 # example:send-message
@@ -60,5 +60,7 @@ print 'Resource URL = ', result.resource_url
 #Few seconds later we can delete the subscription
 time.sleep(10)
 
-sms_client.delete_messages_sent_subscription(resource_url, header, data_format)
+sms_client = oneapi.SmsClient(args.username, args.password, args.server)
+
+sms_client.delete_messages_sent_subscription(resource_url)
 # ----------------------------------------------------------------------------------------------------
