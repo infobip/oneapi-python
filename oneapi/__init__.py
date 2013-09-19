@@ -15,7 +15,7 @@ DEFAULT_BASE_URL = 'https://oneapi.infobip.com'
 
 class AbstractOneApiClient:
 
-    VERSION = '0.01'
+    VERSION = '0.02'
 
     """
     Note that this is *not* a http session. This class is just a utility class 
@@ -135,8 +135,12 @@ class AbstractOneApiClient:
 
         return is_success, mod_json.loads(response.content)
 
-    def execute_DELETE(self, rest_path, params=None, leave_undecoded=False, headers=None):
-        response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params, 
+    def execute_DELETE(self, rest_path, params=None, leave_undecoded=False, headers=None, use_absolute_path=None):
+        if use_absolute_path:
+            response = mod_http.execute_DELETE(rest_path, data=params,
+                                               headers=self.get_headers(headers))
+        else:
+            response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params,
                                            headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
@@ -176,6 +180,8 @@ class SmsClient(AbstractOneApiClient):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
     def send_sms(self, sms, header=None, data_format=None):
+        if not data_format: data_format='json'
+
         client_correlator = sms.client_correlator
         if not client_correlator:
             client_correlator = mod_utils.get_random_alphanumeric_string()
@@ -183,18 +189,14 @@ class SmsClient(AbstractOneApiClient):
         if data_format == "json":
             params = {
                     'address' : [
-                        'tel:' + sms.address
+                        'tel:{0}'.format(sms.address)
                         ],
                     'clientCorrelator': client_correlator,
                     'senderAddress': sms.sender_address,
-                    'outboundSMSTextMessage': {
-                        'message' : sms.message
-                        },
+                    'message' : sms.message,
                     'senderName': 'tel:{0}'.format(sms.sender_address),
-                    'receiptRequest': {
-                        'callbackData': sms.callback_data,
-                        'notifyURL': sms.notify_url
-                        }
+                    'callbackData': sms.callback_data,
+                    'notifyURL': sms.notify_url
                     }
         elif data_format == "url":
             params = {
@@ -269,22 +271,19 @@ class SmsClient(AbstractOneApiClient):
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
 
     def subscribe_delivery_status(self, sms, header=None, data_format=None):
+        if not data_format: data_format='json'
 
         if data_format == "json":
             params = {
-                    'deliveryReceiptSubscription' : {
-                        'callbackReference' : {
-                            'callbackData' : sms.callback_data,
-                            'notifyURL' : sms.notify_url
-                        },
-                        'filterCriteria' : sms.filter_criteria
-                        }
+                    'callbackData' : sms.callback_data,
+                    'notifyURL' : sms.notify_url,
+                    'criteria' : sms.filter_criteria
                     }
         elif data_format == "url":
             params = {
                     'callbackData' : sms.callback_data,
                     'notifyURL' : sms.notify_url,
-                    'filterCriteria' : sms.filter_criteria
+                    'criteria' : sms.filter_criteria
                     }
         else:
             raise Exception("invalid asked data format (supported url or json")
@@ -302,27 +301,25 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
 
+    # TODO (pd) only subscriptionID should be passed into this method
     def delete_delivery_status_subscription(self, resource_url):
 
         is_success = self.execute_DELETE(
-                resource_url
-                )
+            resource_url, use_absolute_path=True
+        )
 
         return is_success
 
     def subscribe_messages_sent_notification(self, sms, header=None, data_format=None):
+        if not data_format: data_format='json'
 
         if data_format == "json":
             params = {
-                    'subscription' : {
-                        'callbackReference' : {
-                            'callbackData' : sms.callback_data,
-                            'notifyURL' : sms.notify_url
-                            },
-                        'criteria' : sms.filter_criteria,
-                        'destinationAddress' : sms.address,
-                        'clientCorrelator' : sms.client_correlator
-                        }
+                    'callbackData' : sms.callback_data,
+                    'notifyURL' : sms.notify_url,
+                    'criteria' : sms.filter_criteria,
+                    'destinationAddress' : sms.address,
+                    'clientCorrelator' : sms.client_correlator
                     }
         elif data_format == "url":
             params = {
@@ -350,11 +347,12 @@ class SmsClient(AbstractOneApiClient):
 
         return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
 
+    # TODO (pd) only subscriptionID should be passed into this method
     def delete_messages_sent_subscription(self, resource_url):
 
         is_success = self.execute_DELETE(
-                resource_url
-                )
+            resource_url, use_absolute_path=True
+        )
 
         return is_success
 
