@@ -134,6 +134,7 @@ class CallbackReference(mod_object.AbstractModel):
 class DeliveryReceiptSubscription(mod_object.AbstractModel):
 
     callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='deliveryReceiptSubscription.callbackReference')
+    filter_criteria = mod_object.FieldConverter('deliveryReceiptSubscription.filterCriteria')
     resource_url = mod_object.FieldConverter('deliveryReceiptSubscription.resourceURL')
 
     def __init__(self):
@@ -141,7 +142,11 @@ class DeliveryReceiptSubscription(mod_object.AbstractModel):
 
 class InboundSMSMessageReceiptSubscription(mod_object.AbstractModel):
 
-    resource_url = mod_object.FieldConverter('resourceReference.resourceURL')
+    callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='subscription.callbackReference')
+    criteria = mod_object.FieldConverter('subscription.criteria')
+    destination_address = mod_object.FieldConverter('subscription.destinationAddress')
+    client_correlator = mod_object.FieldConverter('subscription.clientCorrelator')
+    resource_url = mod_object.FieldConverter('subscription.resourceURL')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
