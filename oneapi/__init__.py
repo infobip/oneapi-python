@@ -193,10 +193,14 @@ class SmsClient(AbstractOneApiClient):
                         ],
                     'clientCorrelator': client_correlator,
                     'senderAddress': sms.sender_address,
-                    'message' : sms.message,
+                    'outboundSMSTextMessage' : {
+                        'message' : sms.message
+                        },
                     'senderName': 'tel:{0}'.format(sms.sender_address),
-                    'callbackData': sms.callback_data,
-                    'notifyURL': sms.notify_url
+                    'receiptRequest' : {
+                        'callbackData': sms.callback_data,
+                        'notifyURL': sms.notify_url
+                        }
                     }
         elif data_format == "url":
             params = {
@@ -275,15 +279,19 @@ class SmsClient(AbstractOneApiClient):
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
+                    'deliveryReceiptSubscription': {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                            },
+                        'filterCriteria' : sms.filter_criteria
+                        }
                     }
         elif data_format == "url":
             params = {
                     'callbackData' : sms.callback_data,
                     'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
+                    'filterCriteria' : sms.filter_criteria
                     }
         else:
             raise Exception("invalid asked data format (supported url or json")
@@ -315,11 +323,15 @@ class SmsClient(AbstractOneApiClient):
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria,
-                    'destinationAddress' : sms.address,
-                    'clientCorrelator' : sms.client_correlator
+                    'subscription' : {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                            },
+                        'criteria' : sms.filter_criteria,
+                        'destinationAddress' : sms.address,
+                        'clientCorrelator' : sms.client_correlator
+                        }
                     }
         elif data_format == "url":
             params = {
