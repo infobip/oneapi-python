@@ -3,3 +3,4 @@
 *.swo
 tags
 tmp*
+dist

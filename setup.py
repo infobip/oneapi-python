@@ -20,13 +20,18 @@ import oneapi as mod_oneapi
 mod_distutilscore.setup(
     name = 'oneapi-python',
     version = mod_oneapi.AbstractOneApiClient.VERSION,
-    description = 'OneApi python library',
+    description = 'Infobip OneApi Python library',
     license = 'Apache License, Version 2.0',
-    author = 'Tomo Krajina',
-    author_email = 'tkrajina@gmail.com',
+    author = 'Infobip Ltd.',
+    author_email = 'plugins@infobip.com',
     url = 'https://github.com/infobip/oneapi-python',
     packages = [
         'oneapi',
-   ],
+    ],
+    keywords = [
+	'infobip',
+	'oneapi',
+	'api'
+    ]
 )
 
