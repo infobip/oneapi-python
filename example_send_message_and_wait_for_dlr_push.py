@@ -46,8 +46,7 @@ sms.sender_address = args.sender
 sms.address = args.address
 sms.message = 'Test message'
 # The url where the delivery notification will be pushed:
-sms.notify_url = 'http://{}:{}'.format(public_ip_address, port)
-sms.notify_url = notify_url
+sms.notify_url = 'http://{}:{}'.format('localhost', port)
 sms.callback_data = 'any+string'
 # ----------------------------------------------------------------------------------------------------
 

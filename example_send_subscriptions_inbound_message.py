@@ -44,7 +44,7 @@ sms_client = oneapi.SmsClient(args.username, args.password, args.server)
 # example:prepare-message-without-notify-url
 sms = models.SMSRequest()
 sms.address = args.address
-sms.notify_url = 'http://{}:{}'.format(public_ip_address, port)
+sms.notify_url = 'http://{}:{}'.format('localhost', port)
 sms.callback_data = 'Any string'
 sms.filter_criteria = "py_test_"+mod_utils.get_random_alphanumeric_string()
 # ----------------------------------------------------------------------------------------------------
