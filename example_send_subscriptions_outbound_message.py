@@ -62,6 +62,21 @@ if not result.is_success():
 print 'Is success = ', result.is_success()
 print 'Resource URL = ', result.resource_url
 
+# Wait for 15 seconds for push-es
+server = dummyserver.DummyWebServer(port)
+server.start_wait_and_shutdown(15)
+
+requests = server.get_requests()
+if not requests:
+    print 'No requests received'
+    sys.exit(1)
+
+for method, path, http_body in requests:
+    # example:on-delivery-notification
+    delivery_status = oneapi.SmsClient.unserialize_delivery_status(http_body)
+    # ----------------------------------------------------------------------------------------------------
+    print delivery_status
+
 # Few seconds later we can delete subscription
 time.sleep(10)
 

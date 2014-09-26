@@ -62,10 +62,21 @@ if not result.is_success():
 print 'Is success = ', result.is_success()
 print 'Resource URL = ', result.resource_url
 
+server = dummyserver.DummyWebWerver(port)
+server.start_wait_and_shutdown(15)
+
+requests = server.get_requests()
+if not requests:
+    print 'No requests received'
+    sys.exit(1)
+
+for method, path, http_body in requests:
+    inbound_notif = oneapi.SmsClient.unserialize_inbound_message(http_body)
+    print inbound_notif
+
 #Few seconds later we can delete the subscription
 time.sleep(10)
 
 sms_client = oneapi.SmsClient(args.username, args.password, args.server)
-
 sms_client.delete_messages_sent_subscription(resource_url)
 # ----------------------------------------------------------------------------------------------------
