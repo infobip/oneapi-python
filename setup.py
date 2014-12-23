@@ -31,6 +31,7 @@ mod_distutilscore.setup(
     keywords = [
 	'infobip',
 	'oneapi',
+	'sms',
 	'api'
     ]
 )

@@ -15,7 +15,7 @@ DEFAULT_BASE_URL = 'https://oneapi.infobip.com'
 
 class AbstractOneApiClient:
 
-    VERSION = '0.02'
+    VERSION = '0.03'
 
     """
     Note that this is *not* a http session. This class is just a utility class 
