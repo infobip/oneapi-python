@@ -100,7 +100,7 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -115,7 +115,7 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -130,7 +130,7 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -148,7 +148,7 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success or response.status_code == 204:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -193,10 +193,14 @@ class SmsClient(AbstractOneApiClient):
                         ],
                     'clientCorrelator': client_correlator,
                     'senderAddress': sms.sender_address,
-                    'message' : sms.message,
+                    'outboundSMSTextMessage' : {
+                        'message' : sms.message
+                        },
                     'senderName': 'tel:{0}'.format(sms.sender_address),
-                    'callbackData': sms.callback_data,
-                    'notifyURL': sms.notify_url
+                    'receiptRequest' : {
+                        'callbackData': sms.callback_data,
+                        'notifyURL': sms.notify_url
+                        }
                     }
         elif data_format == "url":
             params = {
@@ -224,6 +228,9 @@ class SmsClient(AbstractOneApiClient):
                 data_format = data_format
         )
 
+        if not is_success:
+            return is_success
+
         return self.create_from_json(mod_models.ResourceReference, result, not is_success)
 
     def query_delivery_status(self, client_correlator_or_resource_reference, sender):
@@ -243,6 +250,9 @@ class SmsClient(AbstractOneApiClient):
                 params = params
         )
 
+        if not is_success:
+            return is_success
+
         # TODO: Simplify the resulting object
         return self.create_from_json(mod_models.DeliveryInfoList, result, not is_success)
 
@@ -259,6 +269,9 @@ class SmsClient(AbstractOneApiClient):
                 params
         )
 
+        if not is_success:
+            return is_success
+
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
 
     def subscribe_delivery_status(self, sms, header=None, data_format=None):
@@ -266,15 +279,19 @@ class SmsClient(AbstractOneApiClient):
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
+                    'deliveryReceiptSubscription': {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                            },
+                        'filterCriteria' : sms.filter_criteria
+                        }
                     }
         elif data_format == "url":
             params = {
                     'callbackData' : sms.callback_data,
                     'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
+                    'filterCriteria' : sms.filter_criteria
                     }
         else:
             raise Exception("invalid asked data format (supported url or json")
@@ -286,6 +303,9 @@ class SmsClient(AbstractOneApiClient):
                 headers = header,
                 data_format = data_format
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
 
@@ -303,11 +323,15 @@ class SmsClient(AbstractOneApiClient):
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria,
-                    'destinationAddress' : sms.address,
-                    'clientCorrelator' : sms.client_correlator
+                    'subscription' : {
+                        'callbackReference' : {
+                            'callbackData' : sms.callback_data,
+                            'notifyURL' : sms.notify_url
+                            },
+                        'criteria' : sms.filter_criteria,
+                        'destinationAddress' : sms.address,
+                        'clientCorrelator' : sms.client_correlator
+                        }
                     }
         elif data_format == "url":
             params = {
@@ -329,6 +353,9 @@ class SmsClient(AbstractOneApiClient):
                 headers = header,
                 data_format = data_format
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
 
