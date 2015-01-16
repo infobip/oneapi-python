@@ -159,7 +159,7 @@ class AbstractOneApiClient:
 
         if self.raise_exception and not result.is_success():
             message = "{0}: {1} [{2}]".format(result.exception.message_id, result.exception.text, result.exception.variables)
-            raise Exception(message)
+            raise OneApiError(message)
 
         return result
 
@@ -219,7 +219,7 @@ class SmsClient(AbstractOneApiClient):
             if sms.callback_data:
                 params['callbackData'] = sms.callback_data
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
                 '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
@@ -294,7 +294,7 @@ class SmsClient(AbstractOneApiClient):
                     'filterCriteria' : sms.filter_criteria
                     }
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
                 '/1/smsmessaging/outbound/'
@@ -345,7 +345,7 @@ class SmsClient(AbstractOneApiClient):
                 params['client_correlator'] = sms.client_correlator
                 #resourceURL
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
                 '/1/smsmessaging/inbound/subscriptions',
