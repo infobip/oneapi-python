@@ -1,0 +1,2 @@
+class OneApiError(Exception):
+    pass

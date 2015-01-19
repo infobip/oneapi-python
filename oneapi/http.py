@@ -56,7 +56,7 @@ def urlencode_params(params):
 
 def execute_request(method, url, data=None, headers=None, data_format=None):
     if not method in VALID_METHODS:
-        raise Exception('Invalid method %s' % method)
+        raise ValueError('Invalid method %s' % method)
 
     mod_logging.debug('%s to %s with %s', method, url, data)
 

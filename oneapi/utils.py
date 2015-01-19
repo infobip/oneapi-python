@@ -4,9 +4,9 @@ import random as mod_random
 
 def get_random_string(length, chars):
     if not length:
-        raise Exception('Invalid random string length: {0}'.format(length))
+        raise TypeError('Invalid random string length: {0}'.format(length))
     if not chars:
-        raise Exception('Invalid random chars: {0}'.format(chars))
+        raise TypeError('Invalid random chars: {0}'.format(chars))
 
     result = ''
 
