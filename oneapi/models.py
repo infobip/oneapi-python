@@ -8,13 +8,15 @@ import utils as mod_utils
 # ----------------------------------------------------------------------------------------------------
 
 class OneApiError(mod_object.AbstractModel):
-
-    message_id = mod_object.FieldConverter('requestError.serviceException.messageId | requestError.policyException.messageId')
+    message_id = mod_object.FieldConverter(
+        'requestError.serviceException.messageId | requestError.policyException.messageId')
     text = mod_object.FieldConverter('requestError.serviceException.text | requestError.policyException.text')
-    variables = mod_object.FieldConverter('requestError.serviceException.variables | requestError.policyException.variables')
+    variables = mod_object.FieldConverter(
+        'requestError.serviceException.variables | requestError.policyException.variables')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
+
 
 class GenericObject(mod_object.AbstractModel):
     """ May be used where only is_success() is important. """
@@ -37,17 +39,17 @@ class OneApiAuthentication(mod_object.AbstractModel):
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
-    
+
         self.authenticated = False
         self.verified = False
         self.ibsso_token = None
+
 
 # ----------------------------------------------------------------------------------------------------
 # SMS message models:
 # ----------------------------------------------------------------------------------------------------
 
 class SMSRequest(mod_object.AbstractModel):
-
     sender_address = mod_object.FieldConverter('senderAddress')
     sender_name = mod_object.FieldConverter('senderName')
     message = mod_object.FieldConverter()
@@ -78,11 +80,11 @@ class SMSRequest(mod_object.AbstractModel):
         self.sender_name = sender_name
         self.callback_data = callback_data
 
+
 # ----------------------------------------------------------------------------------------------------
 
 class ResourceReference(mod_object.AbstractModel):
-
-    # The client correlator for this message. This value may be used to query 
+    # The client correlator for this message. This value may be used to query
     # for message status later.
     sender = mod_object.GetPartsOfUrlFieldConverter('resourceReference.resourceURL', -3)
     client_correlator = mod_object.FieldConverter('clientCorrelator')
@@ -93,63 +95,61 @@ class ResourceReference(mod_object.AbstractModel):
         self.sender = sender
         self.client_correlator = client_correlator
 
+
 # ----------------------------------------------------------------------------------------------------
 
 class DeliveryInfo(mod_object.AbstractModel):
-
     delivery_status = mod_object.FieldConverter('deliveryStatus')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
+
 # ----------------------------------------------------------------------------------------------------
 
 class DeliveryInfoList(mod_object.AbstractModel):
-
     delivery_info = mod_object.ObjectsListFieldConverter(DeliveryInfo, json_field_name='deliveryInfoList.deliveryInfo')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class DeliveryInfoNotification(mod_object.AbstractModel):
 
-    delivery_info = mod_object.ObjectFieldConverter(DeliveryInfo, json_field_name='deliveryInfoNotification.deliveryInfo')
+class DeliveryInfoNotification(mod_object.AbstractModel):
+    delivery_info = mod_object.ObjectFieldConverter(DeliveryInfo,
+                                                    json_field_name='deliveryInfoNotification.deliveryInfo')
     callback_data = mod_object.FieldConverter('deliveryInfoNotification.callbackData')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
+
 
 # ----------------------------------------------------------------------------------------------------
 # Subscription to notifications:
 # ----------------------------------------------------------------------------------------------------
 
 class CallbackReference(mod_object.AbstractModel):
-
     callback_data = mod_object.FieldConverter('callbackData')
     notify_url = mod_object.FieldConverter('notifyURL')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class DeliveryReceiptSubscription(mod_object.AbstractModel):
 
-    callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='deliveryReceiptSubscription.callbackReference')
-    filter_criteria = mod_object.FieldConverter('deliveryReceiptSubscription.filterCriteria')
+class DeliveryReceiptSubscription(mod_object.AbstractModel):
+    callback_reference = mod_object.ObjectFieldConverter(CallbackReference,
+                                                         json_field_name='deliveryReceiptSubscription.callbackReference')
     resource_url = mod_object.FieldConverter('deliveryReceiptSubscription.resourceURL')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class InboundSMSMessageReceiptSubscription(mod_object.AbstractModel):
 
-    callback_reference = mod_object.ObjectFieldConverter(CallbackReference, json_field_name='subscription.callbackReference')
-    criteria = mod_object.FieldConverter('subscription.criteria')
-    destination_address = mod_object.FieldConverter('subscription.destinationAddress')
-    client_correlator = mod_object.FieldConverter('subscription.clientCorrelator')
-    resource_url = mod_object.FieldConverter('subscription.resourceURL')
+class InboundSMSMessageReceiptSubscription(mod_object.AbstractModel):
+    resource_url = mod_object.FieldConverter('resourceReference.resourceURL')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
+
 
 # ----------------------------------------------------------------------------------------------------
 # HLR models:
@@ -157,15 +157,14 @@ class InboundSMSMessageReceiptSubscription(mod_object.AbstractModel):
 
 
 class ServingMccMnc(mod_object.AbstractModel):
-
     mcc = mod_object.FieldConverter('mcc')
     mnc = mod_object.FieldConverter('mnc')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class TerminalRoamingExtendedData(mod_object.AbstractModel):
 
+class TerminalRoamingExtendedData(mod_object.AbstractModel):
     destination_address = mod_object.FieldConverter('destinationAddress')
     status_id = mod_object.FieldConverter('statusId')
     done_time = mod_object.FieldConverter('doneTime')
@@ -190,8 +189,8 @@ class TerminalRoamingExtendedData(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class TerminalRoamingStatus(mod_object.AbstractModel):
 
+class TerminalRoamingStatus(mod_object.AbstractModel):
     servingMccMnc = mod_object.ObjectFieldConverter(ServingMccMnc, 'servingMccMnc')
     address = mod_object.FieldConverter()
     currentRoaming = mod_object.FieldConverter('currentRoaming')
@@ -203,20 +202,21 @@ class TerminalRoamingStatus(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class TerminalRoamingStatusNotification(mod_object.AbstractModel):
 
-    delivery_info = mod_object.ObjectFieldConverter(TerminalRoamingStatus, json_field_name='terminalRoamingStatusList.roaming')
+class TerminalRoamingStatusNotification(mod_object.AbstractModel):
+    delivery_info = mod_object.ObjectFieldConverter(TerminalRoamingStatus,
+                                                    json_field_name='terminalRoamingStatusList.roaming')
     callback_data = mod_object.FieldConverter('terminalRoamingStatusList.roaming.callbackData')
 
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
+
 
 # ----------------------------------------------------------------------------------------------------
 # MO models:
 # ----------------------------------------------------------------------------------------------------
 
 class InboundSmsMessage(mod_object.AbstractModel):
-
     date_time = mod_object.FieldConverter('dateTime')
     destination_address = mod_object.FieldConverter('destinationAddress')
     message_id = mod_object.FieldConverter('messageId')
@@ -227,9 +227,10 @@ class InboundSmsMessage(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class InboundSmsMessages(mod_object.AbstractModel):
 
-    inbound_sms_message = mod_object.ObjectsListFieldConverter(InboundSmsMessage, 'inboundSMSMessageList.inboundSMSMessage')
+class InboundSmsMessages(mod_object.AbstractModel):
+    inbound_sms_message = mod_object.ObjectsListFieldConverter(InboundSmsMessage,
+                                                               'inboundSMSMessageList.inboundSMSMessage')
     number_of_messages_in_this_batch = mod_object.FieldConverter('inboundSMSMessageList.numberOfMessagesInThisBatch')
     total_number_of_pending_messages = mod_object.FieldConverter('inboundSMSMessageList.totalNumberOfPendingMessages')
     callback_data = mod_object.FieldConverter('inboundSMSMessageList.callbackData')
@@ -237,12 +238,12 @@ class InboundSmsMessages(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
+
 # ----------------------------------------------------------------------------------------------------
 # Customer profile:
 # ----------------------------------------------------------------------------------------------------
 
 class CustomerProfile(mod_object.AbstractModel):
-
     id = mod_object.FieldConverter()
     username = mod_object.FieldConverter()
     forename = mod_object.FieldConverter()
@@ -260,12 +261,12 @@ class CustomerProfile(mod_object.AbstractModel):
     timezone_id = mod_object.FieldConverter('timezoneId')
     primary_language_id = mod_object.FieldConverter('primaryLanguageId')
     secondary_language_id = mod_object.FieldConverter('secondaryLanguageId')
-    
+
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class Currency(mod_object.AbstractModel):
 
+class Currency(mod_object.AbstractModel):
     id = mod_object.FieldConverter()
     currency_name = mod_object.FieldConverter('currencyName')
     symbol = mod_object.FieldConverter()
@@ -273,8 +274,8 @@ class Currency(mod_object.AbstractModel):
     def __init__(self):
         mod_object.AbstractModel.__init__(self)
 
-class AccountBalance(mod_object.AbstractModel):
 
+class AccountBalance(mod_object.AbstractModel):
     balance = mod_object.FieldConverter()
     currency = mod_object.ObjectFieldConverter(Currency)
 

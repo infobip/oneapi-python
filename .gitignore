@@ -5,3 +5,6 @@ tags
 tmp*
 dist
 build
+.name
+*.xml
+*.iml
