@@ -2,6 +2,7 @@
 
 import pdb
 
+import exceptions as mod_exceptions
 import json as mod_json
 import logging as mod_logging
 import base64 as mod_base64
@@ -159,7 +160,7 @@ class AbstractOneApiClient:
 
         if self.raise_exception and not result.is_success():
             message = "{0}: {1} [{2}]".format(result.exception.message_id, result.exception.text, result.exception.variables)
-            raise OneApiError(message)
+            raise mod_exceptions.OneApiError(message)
 
         return result
 
