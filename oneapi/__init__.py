@@ -2,6 +2,7 @@
 
 import pdb
 
+import exceptions as mod_exceptions
 import json as mod_json
 import logging as mod_logging
 import base64 as mod_base64
@@ -13,9 +14,9 @@ import utils as mod_utils
 
 DEFAULT_BASE_URL = 'https://oneapi.infobip.com'
 
-class AbstractOneApiClient:
 
-    VERSION = '0.02'
+class AbstractOneApiClient:
+    VERSION = '0.03'
 
     """
     Note that this is *not* a http session. This class is just a utility class 
@@ -37,8 +38,8 @@ class AbstractOneApiClient:
 
     def login(self):
         params = {
-                'username': self.username,
-                'password': self.password,
+            'username': self.username,
+            'password': self.password,
         }
 
         is_success, result = self.execute_POST('/1/customerProfile/login', params)
@@ -46,7 +47,7 @@ class AbstractOneApiClient:
         return self.fill_oneapi_authentication(result, is_success)
 
     def fill_oneapi_authentication(self, content, is_success):
-        self.oneapi_authentication = self.create_from_json(mod_models.OneApiAuthentication, 
+        self.oneapi_authentication = self.create_from_json(mod_models.OneApiAuthentication,
                                                            content, not is_success)
         self.oneapi_authentication.username = self.username
         self.oneapi_authentication.password = self.password
@@ -92,7 +93,7 @@ class AbstractOneApiClient:
         return result
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=False, headers=None):
-        response = mod_http.execute_GET(self.get_rest_url(rest_path), data=params, 
+        response = mod_http.execute_GET(self.get_rest_url(rest_path), data=params,
                                         headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
@@ -100,13 +101,13 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
 
     def execute_POST(self, rest_path, params=None, leave_undecoded=False, headers=None, data_format=None):
-        response = mod_http.execute_POST(self.get_rest_url(rest_path), data=params, 
+        response = mod_http.execute_POST(self.get_rest_url(rest_path), data=params,
                                          headers=self.get_headers(headers), data_format=data_format)
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
@@ -115,14 +116,14 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
 
     def execute_PUT(self, rest_path, params=None, leave_undecoded=False, headers=None):
-        response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params, 
-                                         headers=self.get_headers(headers))
+        response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params,
+                                        headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('params: {0}'.format(params))
@@ -130,7 +131,7 @@ class AbstractOneApiClient:
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -141,14 +142,14 @@ class AbstractOneApiClient:
                                                headers=self.get_headers(headers))
         else:
             response = mod_http.execute_DELETE(self.get_rest_url(rest_path), data=params,
-                                           headers=self.get_headers(headers))
+                                               headers=self.get_headers(headers))
 
         mod_logging.debug('status code:{0}'.format(response.status_code))
         mod_logging.debug('content:{0}'.format(response.content))
 
         is_success = 200 <= response.status_code <= 299
 
-        if leave_undecoded:
+        if leave_undecoded or not is_success or response.status_code == 204:
             return is_success, response.content
 
         return is_success, mod_json.loads(response.content)
@@ -158,8 +159,9 @@ class AbstractOneApiClient:
         result = mod_object.Conversions.from_json(classs, json, is_error);
 
         if self.raise_exception and not result.is_success():
-            message = "{0}: {1} [{2}]".format(result.exception.message_id, result.exception.text, result.exception.variables)
-            raise Exception(message)
+            message = "{0}: {1} [{2}]".format(result.exception.message_id, result.exception.text,
+                                              result.exception.variables)
+            raise mod_exceptions.OneApiError(message)
 
         return result
 
@@ -168,19 +170,20 @@ class AbstractOneApiClient:
 
         return result
 
+
 class OneApiClient(AbstractOneApiClient):
     """ Generic OneApi client. May be used for direct rest requests. """
 
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
-class SmsClient(AbstractOneApiClient):
 
+class SmsClient(AbstractOneApiClient):
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
     def send_sms(self, sms, header=None, data_format=None):
-        if not data_format: data_format='json'
+        if not data_format: data_format = 'json'
 
         client_correlator = sms.client_correlator
         if not client_correlator:
@@ -188,24 +191,24 @@ class SmsClient(AbstractOneApiClient):
 
         if data_format == "json":
             params = {
-                    'address' : [
-                        'tel:{0}'.format(sms.address)
-                        ],
-                    'clientCorrelator': client_correlator,
-                    'senderAddress': sms.sender_address,
-                    'message' : sms.message,
-                    'senderName': 'tel:{0}'.format(sms.sender_address),
-                    'callbackData': sms.callback_data,
-                    'notifyURL': sms.notify_url
-                    }
+                'address': [
+                    'tel:{0}'.format(sms.address)
+                ],
+                'clientCorrelator': client_correlator,
+                'senderAddress': sms.sender_address,
+                'message': sms.message,
+                'senderName': 'tel:{0}'.format(sms.sender_address),
+                'callbackData': sms.callback_data,
+                'notifyURL': sms.notify_url
+            }
         elif data_format == "url":
             params = {
-                    'senderAddress': sms.sender_address,
-                    'address': sms.address,
-                    'message': sms.message,
-                    'clientCorrelator': client_correlator,
-                    'senderName': 'tel:{0}'.format(sms.sender_address),
-                    }
+                'senderAddress': sms.sender_address,
+                'address': sms.address,
+                'message': sms.message,
+                'clientCorrelator': client_correlator,
+                'senderName': 'tel:{0}'.format(sms.sender_address),
+            }
 
             if sms.mo_response_key:
                 params['moResponseKey'] = sms.mo_response_key
@@ -215,14 +218,17 @@ class SmsClient(AbstractOneApiClient):
             if sms.callback_data:
                 params['callbackData'] = sms.callback_data
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
-                '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
-                params = params,
-                headers = header,
-                data_format = data_format
+            '/1/smsmessaging/outbound/{0}/requests'.format(sms.sender_address),
+            params=params,
+            headers=header,
+            data_format=data_format
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.ResourceReference, result, not is_success)
 
@@ -239,9 +245,12 @@ class SmsClient(AbstractOneApiClient):
         }
 
         is_success, result = self.execute_GET(
-                '/1/smsmessaging/outbound/{0}/requests/{1}/deliveryInfos'.format(sender, client_correlator),
-                params = params
+            '/1/smsmessaging/outbound/{0}/requests/{1}/deliveryInfos'.format(sender, client_correlator),
+            params=params
         )
+
+        if not is_success:
+            return is_success
 
         # TODO: Simplify the resulting object
         return self.create_from_json(mod_models.DeliveryInfoList, result, not is_success)
@@ -251,41 +260,47 @@ class SmsClient(AbstractOneApiClient):
             max_number = 100
 
         params = {
-                'maxBatchSize': max_number,
+            'maxBatchSize': max_number,
         }
 
         is_success, result = self.execute_GET(
-                '/1/smsmessaging/inbound/registrations/INBOUND/messages', 
-                params
+            '/1/smsmessaging/inbound/registrations/INBOUND/messages',
+            params
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.InboundSmsMessages, result, not is_success)
 
     def subscribe_delivery_status(self, sms, header=None, data_format=None):
-        if not data_format: data_format='json'
+        if not data_format: data_format = 'json'
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
-                    }
+                'callbackData': sms.callback_data,
+                'notifyURL': sms.notify_url,
+                'criteria': sms.filter_criteria
+            }
         elif data_format == "url":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria
-                    }
+                'callbackData': sms.callback_data,
+                'notifyURL': sms.notify_url,
+                'criteria': sms.filter_criteria
+            }
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
-                '/1/smsmessaging/outbound/'
-                '{0}/subscriptions'.format(sms.sender_address),
-                params = params,
-                headers = header,
-                data_format = data_format
+            '/1/smsmessaging/outbound/'
+            '{0}/subscriptions'.format(sms.sender_address),
+            params=params,
+            headers=header,
+            data_format=data_format
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.DeliveryReceiptSubscription, result, not is_success)
 
@@ -299,36 +314,39 @@ class SmsClient(AbstractOneApiClient):
         return is_success
 
     def subscribe_messages_sent_notification(self, sms, header=None, data_format=None):
-        if not data_format: data_format='json'
+        if not data_format: data_format = 'json'
 
         if data_format == "json":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'criteria' : sms.filter_criteria,
-                    'destinationAddress' : sms.address,
-                    'clientCorrelator' : sms.client_correlator
-                    }
+                'callbackData': sms.callback_data,
+                'notifyURL': sms.notify_url,
+                'criteria': sms.filter_criteria,
+                'destinationAddress': sms.address,
+                'clientCorrelator': sms.client_correlator
+            }
         elif data_format == "url":
             params = {
-                    'callbackData' : sms.callback_data,
-                    'notifyURL' : sms.notify_url,
-                    'destinationAddress' : sms.address
-                    }
+                'callbackData': sms.callback_data,
+                'notifyURL': sms.notify_url,
+                'destinationAddress': sms.address
+            }
             if sms.filter_criteria:
                 params['criteria'] = sms.filter_criteria
             if sms.client_correlator:
                 params['client_correlator'] = sms.client_correlator
-                #resourceURL
+                # resourceURL
         else:
-            raise Exception("invalid asked data format (supported url or json")
+            raise ValueError("invalid asked data format (supported url or json")
 
         is_success, result = self.execute_POST(
-                '/1/smsmessaging/inbound/subscriptions',
-                params = params,
-                headers = header,
-                data_format = data_format
+            '/1/smsmessaging/inbound/subscriptions',
+            params=params,
+            headers=header,
+            data_format=data_format
         )
+
+        if not is_success:
+            return is_success
 
         return self.create_from_json(mod_models.InboundSMSMessageReceiptSubscription, result, not is_success)
 
@@ -353,6 +371,7 @@ class SmsClient(AbstractOneApiClient):
     def unserialize_delivery_status(json):
         return mod_object.Conversions.from_json(mod_models.DeliveryInfoNotification, json, False)
 
+
 class UssdClient(AbstractOneApiClient):
     """
     Warning, this is an experimental feature. The API may change!
@@ -363,34 +382,34 @@ class UssdClient(AbstractOneApiClient):
 
     def send_message(self, address, message):
         params = {
-                'address': address,
-                'message': message,
+            'address': address,
+            'message': message,
         }
 
         is_success, json = self.execute_POST(
-                '/1/ussd/outbound',
-                params = params
+            '/1/ussd/outbound',
+            params=params
         )
 
         return self.create_from_json(mod_models.InboundSmsMessage, json, not is_success)
 
     def close_session(self, address, message):
         params = {
-                'address': address,
-                'message': message,
-                'stopSession': 'true',
+            'address': address,
+            'message': message,
+            'stopSession': 'true',
         }
 
         is_success, json = self.execute_POST(
-                '/1/ussd/outbound',
-                params = params,
-                leave_undecoded = True
+            '/1/ussd/outbound',
+            params=params,
+            leave_undecoded=True
         )
 
         return True
 
-class DataConnectionProfileClient(AbstractOneApiClient):
 
+class DataConnectionProfileClient(AbstractOneApiClient):
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
@@ -407,7 +426,7 @@ class DataConnectionProfileClient(AbstractOneApiClient):
 
         # TODO(TK) Add these includeExtendedData, clientCorrelator, callbackData
 
-        is_success, result = self.execute_GET('/1/terminalstatus/queries/roamingStatus', params, 
+        is_success, result = self.execute_GET('/1/terminalstatus/queries/roamingStatus', params,
                                               leave_undecoded=True)
 
         if notify_url:
@@ -426,14 +445,14 @@ class DataConnectionProfileClient(AbstractOneApiClient):
     def unserialize_roaming_status(json):
         return mod_object.Conversions.from_json(mod_models.TerminalRoamingStatusNotification, json, False)
 
-class CustomerProfileClient(AbstractOneApiClient):
 
+class CustomerProfileClient(AbstractOneApiClient):
     def __init__(self, username, password, base_url=None):
         AbstractOneApiClient.__init__(self, username, password, base_url=base_url)
 
     def get_account_balance(self):
         is_success, result = self.execute_GET('/1/customerProfile/balance')
-        
+
         return self.create_from_json(mod_models.AccountBalance, result, not is_success)
 
     def get_customer_profile(self):

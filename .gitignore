@@ -3,6 +3,11 @@
 *.swo
 tags
 tmp*
+dist
+build
+.name
+*.xml
+*.iml
 
 # Created by https://www.gitignore.io
 
