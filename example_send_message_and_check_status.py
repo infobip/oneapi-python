@@ -43,7 +43,7 @@ sms.sender_address = args.sender
 sms.address = args.address
 sms.message = 'Test message'
 sms.callback_data = 'Any string'
-sms.notify_url = 'Any URL'
+sms.notify_url = 'http://example.com/'
 # ----------------------------------------------------------------------------------------------------
 
 # example:send-message
