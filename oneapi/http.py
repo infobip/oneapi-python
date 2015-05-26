@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pdb
+import urllib
 
 """
 Note, requests are much better than this
@@ -114,16 +115,16 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
     return CustomHttpResponse(http_code, headers, body)
 
 def execute_GET(url, data=None, headers=None):
-    return execute_request('GET', url, data=data, headers=headers)
+    return execute_request('GET', urllib.quote(url, ':/'), data=data, headers=headers)
 
 def execute_POST(url, data=None, headers=None, data_format=None):
-    return execute_request('POST', url, data=data, headers=headers, data_format=data_format)
+    return execute_request('POST', urllib.quote(url, ':/'), data=data, headers=headers, data_format=data_format)
 
 def execute_PUT(url, data=None, headers=None):
-    return execute_request('PUT', url, data=data, headers=headers)
+    return execute_request('PUT', urllib.quote(url, ':/'), data=data, headers=headers)
 
 def execute_DELETE(url, data=None, headers=None):
-    return execute_request('DELETE', url, data=data, headers=headers)
+    return execute_request('DELETE', urllib.quote(url, ':/'), data=data, headers=headers)
 
 if __name__ == '__main__':
     #print execute_GET('http://localhost', {'a': 'šđčćž/(/(/('})
