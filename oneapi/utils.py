@@ -37,7 +37,7 @@ def get(json_data, path):
             pass
         try:
             result = result[part]
-        except Exception, e:
+        except Exception as e:
             return None
 
     return result

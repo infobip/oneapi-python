@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import object as mod_object
-import utils as mod_utils
+from . import object as mod_object
+from . import utils as mod_utils
 
 # ----------------------------------------------------------------------------------------------------
 # Generic objects:

@@ -2,15 +2,15 @@
 
 import pdb
 
-import exceptions as mod_exceptions
+from . import exceptions as mod_exceptions
 import json as mod_json
 import logging as mod_logging
 import base64 as mod_base64
 
-import http as mod_http
-import models as mod_models
-import object as mod_object
-import utils as mod_utils
+from . import http as mod_http
+from . import models as mod_models
+from . import object as mod_object
+from . import utils as mod_utils
 
 DEFAULT_BASE_URL = 'https://oneapi.infobip.com'
 
@@ -88,8 +88,8 @@ class AbstractOneApiClient:
             result['Authorization'] = 'IBSSO {0}'.format(self.oneapi_authentication.ibsso_token)
         else:
             auth_string = '%s:%s' % (self.username, self.password)
-            auth_string = mod_base64.encodestring(auth_string)
-            result['Authorization'] = 'Basic {0}'.format(auth_string).strip()
+            auth_string = mod_base64.encodestring(auth_string.encode('utf-8'))
+            result['Authorization'] = 'Basic {0}'.format(auth_string.decode('utf-8')).strip()
         return result
 
     def execute_GET(self, rest_path, params=None, leave_undecoded=False, headers=None):
@@ -119,7 +119,7 @@ class AbstractOneApiClient:
         if leave_undecoded or not is_success:
             return is_success, response.content
 
-        return is_success, mod_json.loads(response.content)
+        return is_success, mod_json.loads(response.content.decode('utf-8'))
 
     def execute_PUT(self, rest_path, params=None, leave_undecoded=False, headers=None):
         response = mod_http.execute_PUT(self.get_rest_url(rest_path), data=params,
@@ -434,7 +434,7 @@ class DataConnectionProfileClient(AbstractOneApiClient):
         else:
             assert result
             json = mod_json.loads(result)
-            assert json.has_key('roaming')
+            assert 'roaming' in json
             return self.create_from_json(mod_models.TerminalRoamingStatus, json['roaming'], not is_success);
 
     # ----------------------------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ import logging as mod_logging
 import json as mod_json
 
 import oneapi.utils as mod_utils
+import collections
 
 class FieldConverter:
 
@@ -118,7 +119,7 @@ class Conversions:
 
         import oneapi.models as mod_models
 
-        if isinstance(json, str) or isinstance(json, unicode):
+        if isinstance(json, str) or isinstance(json, str):
             json = mod_json.loads(json)
 
         assert isinstance(json, dict)
@@ -138,7 +139,7 @@ class Conversions:
                     converted = attribute_value.from_json(json_value)
 
                     if object_field_name:
-                        if isinstance(converted, unicode):
+                        if isinstance(converted, str):
                             converted = converted.encode('utf-8')
                         setattr(obj, object_field_name, converted)
 
@@ -149,7 +150,7 @@ class Conversions:
         """ Create a new object converted from JSON data. """
         assert classs
 
-        if isinstance(json, str) or isinstance(json, unicode):
+        if isinstance(json, str) or isinstance(json, str):
             json = mod_json.loads(json)
 
         assert isinstance(json, dict)
@@ -190,7 +191,7 @@ class AbstractModel:
 
         for attr in dir(self):
             value = getattr(self, attr)
-            if '_' != attr[0] and not callable(value):
+            if '_' != attr[0] and not isinstance(value, collections.Callable):
                 result += ':{0}={1}'.format(attr, value)
 
         return result + ']'

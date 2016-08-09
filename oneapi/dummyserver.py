@@ -1,7 +1,7 @@
 import logging as mod_logging
-import SimpleHTTPServer as mod_simplehttpserver
-import BaseHTTPServer as mod_basehttprequesthandler
-import SocketServer as mod_socketserver
+import http.server as mod_simplehttpserver
+import http.server as mod_basehttprequesthandler
+import socketserver as mod_socketserver
 import time as mod_time
 import threading as mod_threading
 
@@ -41,16 +41,16 @@ class PushListenerHandler(mod_basehttprequesthandler.BaseHTTPRequestHandler):
         try:
             length = int(self.headers.getheader('content-length'))
             return self.rfile.read(length)
-        except Exception, e:
+        except Exception as e:
             mod_logging.exception(e)
             return None
 
     def save_request(self, http_method, path, body=None):
-        print 'Request:'
-        print '{0} {1}'.format(http_method, path)
+        print('Request:')
+        print('{0} {1}'.format(http_method, path))
         if body:
-            print body
-        print '------------------------------------------------------------------------------------------'
+            print(body)
+        print('------------------------------------------------------------------------------------------')
         self.server.saved_requests.append((http_method, path, body, ))
 
 class DummyWebServer(mod_socketserver.TCPServer, mod_threading.Thread):
@@ -92,4 +92,4 @@ if __name__ == '__main__':
 
     dummy_web_server.start_wait_and_shutdown(5)
 
-    print 'Saved requests:', dummy_web_server.get_requests()
+    print('Saved requests:', dummy_web_server.get_requests())

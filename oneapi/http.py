@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import pdb
-import urllib
+try:
+    from urllib.parse import quote
+    from urllib.request import Request
+    from urllib.parse import urlencode
+    from urllib.request import build_opener, HTTPHandler
+except ImportError:
+    from urllib2 import Request
+    from urllib import quote
+    from urllib import urlencode
+    from urllib2 import build_opener, HTTPHandler
+
 
 """
 Note, requests are much better than this
 """
 import json as mod_json
 import logging as mod_logging
-import urllib2 as mod_urllib2
-import urllib as mod_urllib
 import collections as mod_collections
 
 mod_logging.basicConfig(level=mod_logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
@@ -23,10 +30,13 @@ CustomHttpResponse = mod_collections.namedtuple(
         'CustomHttpResponse',
         ('status_code', 'headers', 'content'))
 
-class CustomRequest(mod_urllib2.Request):
+class CustomRequest(Request):
 
     def __init__(self, method, url, *args1, **args2):
-        mod_urllib2.Request.__init__(self, url, *args1, **args2)
+        try:
+            super(CustomRequest, self).__init__(url, *args1, **args2)
+        except TypeError:
+            Request.__init__(self, url, *args1, **args2)
         self.method = method
 
     def get_method(self):
@@ -51,7 +61,7 @@ def parse_headers(headers):
 
 def urlencode_params(params):
     if hasattr(params, 'items') or isinstance(params, tuple):
-        return mod_urllib.urlencode(params)
+        return urlencode(params)
 
     return params
 
@@ -62,7 +72,7 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
     mod_logging.debug('%s to %s with %s', method, url, data)
 
     body = None
-    opener = mod_urllib2.build_opener(mod_urllib2.HTTPHandler)
+    opener = build_opener(HTTPHandler)
     if data:
         if method in PARAMS_IN_BODY_METHODS:
             if data_format == "json":
@@ -79,16 +89,16 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
 
     if headers:
         mod_logging.debug('Headers: %s', headers)
-        for key, value in headers.items():
+        for key, value in list(headers.items()):
             request.add_header(key, value)
 
     try:
-        url = opener.open(request, data=body)
+        url = opener.open(request, data=body.encode('utf-8'))
 
         http_code = url.getcode()
         headers = headers
         body = url.read()
-    except Exception, e:
+    except Exception as e:
         if hasattr(e, 'code'):
             http_code = e.code
         else:
@@ -97,7 +107,7 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
 
         if hasattr(e, 'headers'):
             headers = {}
-            for key, value in e.headers.items():
+            for key, value in list(e.headers.items()):
                 headers[key] = value
 
         if hasattr(e, 'read'):
@@ -105,7 +115,7 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
     finally:
         try:
             url.close()
-        except Exception, ignore:
+        except Exception as ignore:
             pass
 
     mod_logging.debug('http response code:%s', http_code)
@@ -115,17 +125,17 @@ def execute_request(method, url, data=None, headers=None, data_format=None):
     return CustomHttpResponse(http_code, headers, body)
 
 def execute_GET(url, data=None, headers=None):
-    return execute_request('GET', urllib.quote(url, ':/'), data=data, headers=headers)
+    return execute_request('GET', quote(url, ':/'), data=data, headers=headers)
 
 def execute_POST(url, data=None, headers=None, data_format=None):
-    return execute_request('POST', urllib.quote(url, ':/'), data=data, headers=headers, data_format=data_format)
+    return execute_request('POST', quote(url, ':/'), data=data, headers=headers, data_format=data_format)
 
 def execute_PUT(url, data=None, headers=None):
-    return execute_request('PUT', urllib.quote(url, ':/'), data=data, headers=headers)
+    return execute_request('PUT', quote(url, ':/'), data=data, headers=headers)
 
 def execute_DELETE(url, data=None, headers=None):
-    return execute_request('DELETE', urllib.quote(url, ':/'), data=data, headers=headers)
+    return execute_request('DELETE', quote(url, ':/'), data=data, headers=headers)
 
 if __name__ == '__main__':
     #print execute_GET('http://localhost', {'a': 'šđčćž/(/(/('})
-    print execute_GET('https://oneapi.infobip.com/status', {'a': 'šđčćž/(/(/('})
+    print((execute_GET('https://oneapi.infobip.com/status', {'a': 'šđčćž/(/(/('})))
